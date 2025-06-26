@@ -1,22 +1,31 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br />
+    <p class="bg-black">
+      For a and recipes on how to configure / customize this project,<br />
       check out the
       <a href="https://cli.vuejs.org" target="_blank" rel="noopener"
         >vue-cli documentation</a
       >.
     </p>
     <h3>Installed CLI Plugins</h3>
+    <div
+      class="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-md flex items-center space-x-4"
+    >
+      <div class="flex-shrink-0"></div>
+      <div>
+        <div class="text-xl font-medium text-black">ChitChat</div>
+        <p class="text-gray-500">You have a new message!</p>
+      </div>
+    </div>
     <ul>
       <li>
         <a
           href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel"
           target="_blank"
           rel="noopener"
-          >babel</a
-        >
+          >babel
+        </a>
       </li>
       <li>
         <a
@@ -118,14 +127,17 @@ export default defineComponent({
 h3 {
   margin: 40px 0 0;
 }
+
 ul {
   list-style-type: none;
   padding: 0;
 }
+
 li {
   display: inline-block;
   margin: 0 10px;
 }
+
 a {
   color: #42b983;
 }
