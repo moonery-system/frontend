@@ -1,18 +1,43 @@
-// src/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
-import LoginView from "../views/LoginView.vue";
-import DashboardView from "../views/DashboardView.vue";
-import { isTokenValid } from "../services/auth";
+import HomeView from "@/views/HomeView.vue";
+import NotFoundView from "@/views/NotFoundView.vue";
+import UnauthorizedView from "@/views/UnauthorizedView.vue";
+import { isTokenValid, hasPermission, hasAnyPermission } from "@/services/auth";
+import ClientsListView from "@/views/clients/ClientsListView.vue";
+import LoginView from "@/views/auth/LoginView.vue";
+import ClientsDetailView from "@/views/clients/ClientsDetailView.vue";
 
 const routes = [
+  { path: "/login", component: LoginView, meta: { guestOnly: true } },
   {
-    path: "/login",
-    component: LoginView,
-    meta: { guestOnly: true },
+    path: "/",
+    component: HomeView,
+    meta: { requiresAuth: true },
   },
   {
-    path: "/dashboard",
-    component: DashboardView,
+    path: "/clients",
+    component: ClientsListView,
+    meta: {
+      requiresAuth: true,
+      requiredPermissions: ["clients.viewAny"],
+    },
+  },
+  {
+    path: "/clients/:id",
+    component: ClientsDetailView,
+    meta: {
+      requiresAuth: true,
+      requiredPermissions: ["clients.view"],
+    },
+  },
+  {
+    path: "/:pathMatch(.*)*",
+    name: "NotFound",
+    component: NotFoundView,
+  },
+  {
+    path: "/unauthorized",
+    component: UnauthorizedView,
     meta: { requiresAuth: true },
   },
 ];
@@ -30,10 +55,32 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.meta.guestOnly && isLoggedIn) {
-    return next("/dashboard");
+    return next("/");
   }
 
-  return next();
+  if (to.meta.requiredPermissions && isLoggedIn) {
+    const permissions = to.meta.requiredPermissions as string[];
+
+    const hasRequiredPermission = await hasAnyPermission(permissions);
+
+    if (!hasRequiredPermission) {
+      return next("/unauthorized");
+    }
+  }
+
+  if (to.meta.requiredAllPermissions && isLoggedIn) {
+    const permissions = to.meta.requiredAllPermissions as string[];
+
+    const hasAllPermissions = await Promise.all(
+      permissions.map((permission) => hasPermission(permission))
+    );
+
+    if (!hasAllPermissions.every(Boolean)) {
+      return next("/unauthorized");
+    }
+  }
+
+  next();
 });
 
 export default router;
