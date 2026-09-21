@@ -1,4 +1,4 @@
-function formatDateTime(dateInput: Date) {
+function formatDateTime(dateInput: string | Date | null | undefined) {
   if (!dateInput) return "Not available";
 
   const date = new Date(dateInput);

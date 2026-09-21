@@ -30,6 +30,17 @@ interface ApiResponse<T> {
   message?: string;
 }
 
+export interface ClientAddress {
+  id: number;
+  user_id: number;
+  address_line: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  complement: string | null;
+}
+
 export interface Client {
   id: number;
   name: string;
@@ -38,7 +49,49 @@ export interface Client {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-  client_address: any[];
+  client_address: ClientAddress[];
+}
+
+export interface DeliveryStatus {
+  id: number;
+  name: string;
+  label: string;
+}
+
+export interface DeliveryItem {
+  id: number;
+  delivery_id: number;
+  name: string;
+  description: string | null;
+  quantity: number;
+  weight: string;
+}
+
+export interface DeliveryStatusHistoryEntry {
+  id: number;
+  created_at: string;
+  status: DeliveryStatus;
+  user: { id: number; name: string } | null;
+}
+
+export interface Delivery {
+  id: number;
+  tracking_code: string | null;
+  creator_id: number;
+  client_id: number;
+  delivery_man_id: number | null;
+  client_address_id: number;
+  scheduled_to: string | null;
+  delivered_at: string | null;
+  created_at: string;
+  updated_at: string;
+  status: DeliveryStatus;
+  client?: Client;
+  address?: ClientAddress;
+  deliveryman?: { id: number; name: string } | null;
+  items?: DeliveryItem[];
+  status_history?: DeliveryStatusHistoryEntry[];
+  available_transitions?: string[];
 }
 
 export function usePaginatedFetch<T>(endpoint: string) {
