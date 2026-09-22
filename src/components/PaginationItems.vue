@@ -5,7 +5,8 @@
   >
     <div class="text-sm text-gray-500">
       Showing {{ (currentPage - 1) * perPage + 1 }} to
-      {{ Math.min(currentPage * perPage, total) }} of {{ total }} clients
+      {{ Math.min(currentPage * perPage, total) }} of {{ total }}
+      {{ itemLabel }}
     </div>
 
     <div class="flex items-center space-x-2">
@@ -33,13 +34,17 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  total: number;
-  currentPage: number;
-  perPage: number;
-  lastPage: number;
-  loading: boolean;
-}>();
+withDefaults(
+  defineProps<{
+    total: number;
+    currentPage: number;
+    perPage: number;
+    lastPage: number;
+    loading: boolean;
+    itemLabel?: string;
+  }>(),
+  { itemLabel: "items" }
+);
 
 defineEmits<{
   (e: "go-to-page", page: number): void;

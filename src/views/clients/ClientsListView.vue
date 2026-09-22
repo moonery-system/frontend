@@ -137,6 +137,7 @@
           :perPage="perPage"
           :lastPage="lastPage"
           :loading="loading"
+          item-label="clients"
           @go-to-page="goToPage"
         />
       </PermissionGuard>
