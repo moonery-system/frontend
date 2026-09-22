@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/services/api";
 import BackButton from "@/components/buttons/BackButton.vue";
@@ -39,6 +39,7 @@ import DeliveryCard from "@/components/deliveries/DeliveryCard.vue";
 import DeliveryTimeline from "@/components/deliveries/DeliveryTimeline.vue";
 import DeliveryStatusActions from "@/components/deliveries/DeliveryStatusActions.vue";
 import type { Delivery } from "@/types/api";
+import { onNotification } from "@/services/websocket";
 
 const route = useRoute();
 const router = useRouter();
@@ -69,5 +70,17 @@ function onGone() {
   router.push("/deliveries");
 }
 
-onMounted(loadDelivery);
+let unsubscribe: (() => void) | null = null;
+
+onMounted(() => {
+  loadDelivery();
+
+  // O payload é genérico (título e descrição), então recarregamos em vez de
+  // aplicar o novo status às cegas. Um caminho de dados só.
+  unsubscribe = onNotification((payload) => {
+    if (payload.type === "notification") loadDelivery();
+  });
+});
+
+onUnmounted(() => unsubscribe?.());
 </script>
