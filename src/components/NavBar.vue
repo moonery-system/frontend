@@ -94,6 +94,7 @@
                 <!-- Profile dropdown -->
                 <div class="ml-3 relative">
                   <div class="flex items-center space-x-4">
+                    <NotificationBell />
                     <div class="flex items-center space-x-2 text-gray-600">
                       <div
                         class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center"
@@ -257,6 +258,8 @@
         </div>
       </nav>
 
+      <NotificationToast v-if="isAuthenticated" />
+
       <!-- Main Content -->
       <main class="flex-1">
         <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -272,12 +275,20 @@
 <script>
 import api from "@/services/api";
 import PermissionGuard from "@/components/PermissionGuard.vue";
+import NotificationBell from "@/components/NotificationBell.vue";
+import NotificationToast from "@/components/NotificationToast.vue";
 import { clearAuthCache } from "@/services/auth";
+import {
+  connect as connectWebSocket,
+  disconnect as disconnectWebSocket,
+} from "@/services/websocket";
 
 export default {
   name: "AppLayout",
   components: {
     PermissionGuard,
+    NotificationBell,
+    NotificationToast,
   },
   data() {
     return {
@@ -314,10 +325,12 @@ export default {
         const response = await api.get("/auth/user");
         this.isAuthenticated = true;
         this.user = response.data.data?.user || null;
+        connectWebSocket();
       } catch (error) {
         this.isAuthenticated = false;
         this.user = null;
         clearAuthCache();
+        disconnectWebSocket();
       } finally {
         this.loadingAuth = false;
       }
@@ -331,6 +344,7 @@ export default {
         this.isAuthenticated = false;
         this.user = null;
         clearAuthCache();
+        disconnectWebSocket();
         this.$router.push("/login");
       }
     },
