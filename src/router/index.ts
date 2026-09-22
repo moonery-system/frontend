@@ -9,6 +9,9 @@ import InviteView from "@/views/auth/InviteView.vue";
 import ClientsDetailView from "@/views/clients/ClientsDetailView.vue";
 import ClientsCreateView from "@/views/clients/ClientsCreateView.vue";
 import ClientsEditView from "@/views/clients/ClientsEditView.vue";
+import DeliveriesListView from "@/views/deliveries/DeliveriesListView.vue";
+import DeliveriesCreateView from "@/views/deliveries/DeliveriesCreateView.vue";
+import DeliveriesDetailView from "@/views/deliveries/DeliveriesDetailView.vue";
 
 const routes = [
   { path: "/login", component: LoginView, meta: { guestOnly: true } },
@@ -48,6 +51,30 @@ const routes = [
     meta: {
       requiresAuth: true,
       requiredPermissions: ["clients.update"],
+    },
+  },
+  {
+    path: "/deliveries",
+    component: DeliveriesListView,
+    meta: {
+      requiresAuth: true,
+      requiredPermissions: ["deliveries.viewAny"],
+    },
+  },
+  {
+    path: "/deliveries/create",
+    component: DeliveriesCreateView,
+    meta: {
+      requiresAuth: true,
+      requiredPermissions: ["deliveries.create"],
+    },
+  },
+  {
+    path: "/deliveries/:id",
+    component: DeliveriesDetailView,
+    meta: {
+      requiresAuth: true,
+      requiredPermissions: ["deliveries.view"],
     },
   },
   {

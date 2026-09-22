@@ -63,6 +63,17 @@
                   </router-link>
                 </PermissionGuard>
 
+                <PermissionGuard permission="deliveries.viewAny">
+                  <router-link
+                    to="/deliveries"
+                    class="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600"
+                    active-class="bg-blue-100 text-blue-700"
+                  >
+                    <span class="mr-2">📦</span>
+                    Deliveries
+                  </router-link>
+                </PermissionGuard>
+
                 <!-- Exemplo com wildcard -->
                 <PermissionGuard permission="users.*">
                   <router-link
@@ -186,6 +197,18 @@
               >
                 <span class="mr-3">👥</span>
                 Clients
+              </router-link>
+            </PermissionGuard>
+
+            <PermissionGuard permission="deliveries.viewAny">
+              <router-link
+                to="/deliveries"
+                class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600"
+                active-class="bg-blue-100 text-blue-700"
+                @click="mobileMenuOpen = false"
+              >
+                <span class="mr-3">📦</span>
+                Deliveries
               </router-link>
             </PermissionGuard>
 
