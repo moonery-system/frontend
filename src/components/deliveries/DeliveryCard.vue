@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
+  <div class="surface">
     <div class="p-6">
       <div class="flex items-start justify-between">
         <div>
-          <p class="font-mono text-sm text-gray-500">
+          <p class="font-mono text-sm text-cream/65">
             {{ delivery.tracking_code ?? `#${delivery.id}` }}
           </p>
           <div class="mt-2">
@@ -11,7 +11,7 @@
           </div>
         </div>
 
-        <div class="text-right text-sm text-gray-500">
+        <div class="text-right text-sm text-cream/65">
           <p>Created {{ formatDateTime(delivery.created_at) }}</p>
           <p v-if="delivery.delivered_at">
             Delivered {{ formatDateTime(delivery.delivered_at) }}
@@ -23,25 +23,25 @@
         <div class="space-y-4">
           <div>
             <label
-              class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
             >
               Client
             </label>
-            <p class="mt-1 text-gray-900">
+            <p class="mt-1 text-cream">
               {{ delivery.client?.name ?? "—" }}
             </p>
-            <p v-if="delivery.client" class="text-sm text-gray-500">
+            <p v-if="delivery.client" class="text-sm text-cream/65">
               {{ delivery.client.email }}
             </p>
           </div>
 
           <div>
             <label
-              class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
             >
               Delivery man
             </label>
-            <p class="mt-1 text-gray-900">
+            <p class="mt-1 text-cream">
               {{ delivery.deliveryman?.name ?? "Not assigned yet" }}
             </p>
           </div>
@@ -50,11 +50,11 @@
         <div class="space-y-4">
           <div>
             <label
-              class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
             >
               Address
             </label>
-            <p v-if="delivery.address" class="mt-1 text-gray-900 text-sm">
+            <p v-if="delivery.address" class="mt-1 text-cream text-sm">
               {{ delivery.address.address_line }},
               {{ delivery.address.neighborhood }}<br />
               {{ delivery.address.city }}/{{ delivery.address.state }} —
@@ -63,37 +63,37 @@
                 <br />{{ delivery.address.complement }}
               </template>
             </p>
-            <p v-else class="mt-1 text-gray-400 text-sm">—</p>
+            <p v-else class="mt-1 text-cream/55 text-sm">—</p>
           </div>
         </div>
       </div>
 
-      <div class="mt-6 pt-5 border-t border-gray-100">
+      <div class="mt-6 pt-5 border-t border-cream/10">
         <label
-          class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+          class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
         >
           Items
         </label>
 
-        <ul class="mt-2 divide-y divide-gray-100">
+        <ul class="mt-2 divide-y divide-cream/10">
           <li
             v-for="item in delivery.items ?? []"
             :key="item.id"
             class="py-2 flex items-center justify-between text-sm"
           >
             <div>
-              <p class="text-gray-900">{{ item.name }}</p>
-              <p v-if="item.description" class="text-gray-500 text-xs">
+              <p class="text-cream">{{ item.name }}</p>
+              <p v-if="item.description" class="text-cream/65 text-xs">
                 {{ item.description }}
               </p>
             </div>
-            <span class="text-gray-500">
+            <span class="text-cream/65">
               {{ item.quantity }}x · {{ Number(item.weight).toFixed(2) }} kg
             </span>
           </li>
         </ul>
 
-        <p class="mt-2 text-xs text-gray-400">
+        <p class="mt-2 text-xs text-cream/55">
           Total weight: {{ totalWeight.toFixed(2) }} kg
         </p>
       </div>

@@ -1,112 +1,109 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-5xl mx-auto px-4 py-8">
-      <div class="mb-8 flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-light text-gray-900 tracking-tight">
-            Users
-          </h1>
-          <p class="text-sm text-gray-500 mt-1">
-            Accounts and what each one can do
-          </p>
-        </div>
+  <div class="animate-rise">
+    <PageHeader
+      eyebrow="Registry"
+      title="Team"
+      lead="Everyone with a login, and what each account is allowed to do. New members are activated by email."
+    >
+      <PermissionGuard permission="users.create">
+        <CreateButton text="Add member" redirect="users" />
+      </PermissionGuard>
+    </PageHeader>
 
-        <PermissionGuard permission="users.create">
-          <CreateButton text="Create User" redirect="users" />
-        </PermissionGuard>
-      </div>
+    <div class="mb-6 max-w-md">
+      <SearchInput
+        v-model="searchQuery"
+        placeholder="Search by name or email"
+        @input="debouncedSearch"
+      />
+    </div>
 
-      <div class="mb-6">
-        <input
-          v-model="searchQuery"
-          @input="debouncedSearch"
-          type="text"
-          placeholder="Search users by name or email..."
-          class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all duration-200 text-sm text-gray-700"
-        />
-      </div>
+    <ListSkeleton v-if="loading" />
 
-      <LoadingAnimation :loading="loading" />
+    <div
+      v-else-if="users.length > 0"
+      class="surface divide-y divide-cream/10 overflow-hidden"
+    >
+      <div
+        v-for="user in users"
+        :key="user.id"
+        class="flex flex-wrap items-center justify-between gap-4 px-5 py-4 transition-colors duration-200 hover:bg-cream/[0.03] sm:px-6"
+      >
+        <div class="flex min-w-0 items-center gap-4">
+          <div
+            class="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold-400/15 font-display text-sm font-bold text-gold-400"
+          >
+            {{ user.name.charAt(0).toUpperCase() }}
+          </div>
 
-      <div v-if="users.length > 0" class="space-y-3">
-        <div
-          v-for="user in users"
-          :key="user.id"
-          class="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-200 hover:shadow-sm"
-        >
-          <div class="p-6 flex items-center justify-between">
-            <div class="flex items-center space-x-4 min-w-0">
-              <div
-                class="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center flex-shrink-0"
+          <div class="min-w-0">
+            <h3 class="truncate font-semibold text-cream">{{ user.name }}</h3>
+            <p class="truncate text-sm text-cream/55">{{ user.email }}</p>
+            <div class="mt-2 flex flex-wrap items-center gap-2">
+              <span
+                v-for="role in user.roles ?? []"
+                :key="role.id"
+                class="rounded-md bg-cream/[0.06] px-2 py-1 text-[11px] font-semibold leading-none text-cream/80 ring-1 ring-inset ring-cream/10"
               >
-                <span class="text-gray-600 font-medium text-lg">
-                  {{ user.name.charAt(0).toUpperCase() }}
-                </span>
-              </div>
-
-              <div class="min-w-0">
-                <h3 class="text-lg font-medium text-gray-900">
-                  {{ user.name }}
-                </h3>
-                <p class="text-sm text-gray-500">{{ user.email }}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span
-                    v-for="role in user.roles ?? []"
-                    :key="role.id"
-                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700"
-                  >
-                    {{ role.name }}
-                  </span>
-                  <span
-                    class="text-xs"
-                    :class="
-                      user.activated_at ? 'text-green-600' : 'text-gray-400'
-                    "
-                  >
-                    {{ user.activated_at ? "Active" : "Pending activation" }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <EditButton :id="user.id" redirect="users" />
-              <DeleteButton
-                :id="user.id"
-                redirect="users"
-                :name="user.name"
-                @deleted="handleDeleted"
-              />
+                {{ role.name }}
+              </span>
+              <span
+                class="text-xs"
+                :class="user.activated_at ? 'text-moss-400' : 'text-gold-400'"
+              >
+                {{ user.activated_at ? "Active" : "Waiting for activation" }}
+              </span>
             </div>
           </div>
         </div>
+
+        <div class="flex items-center gap-2">
+          <EditButton :id="user.id" redirect="users" />
+          <DeleteButton
+            :id="user.id"
+            redirect="users"
+            :name="user.name"
+            @deleted="handleDeleted"
+          />
+        </div>
       </div>
+    </div>
 
-      <p v-else-if="!loading" class="text-sm text-gray-400 py-10 text-center">
-        No user here.
-      </p>
-
-      <PaginationItems
-        :total="total"
-        :current-page="currentPage"
-        :per-page="perPage"
-        :last-page="lastPage"
-        :loading="loading"
-        item-label="users"
-        @go-to-page="(page: number) => goToPage(page, { search: searchQuery })"
+    <div v-else class="surface">
+      <EmptyState
+        icon="user"
+        :title="searchQuery ? 'No one matches that search' : 'Nobody here yet'"
+        :text="
+          searchQuery
+            ? 'Try a shorter name, or search by the email address instead.'
+            : 'Add the first team member. They get an email to set a password and activate the account.'
+        "
       />
     </div>
+
+    <PaginationItems
+      :total="total"
+      :current-page="currentPage"
+      :per-page="perPage"
+      :last-page="lastPage"
+      :loading="loading"
+      item-label="members"
+      @go-to-page="(page: number) => goToPage(page, { search: searchQuery })"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import PageHeader from "@/components/layout/PageHeader.vue";
+import SearchInput from "@/components/ui/SearchInput.vue";
+import EmptyState from "@/components/ui/EmptyState.vue";
+import ListSkeleton from "@/components/ui/ListSkeleton.vue";
 import { onMounted, ref } from "vue";
 import PermissionGuard from "@/components/PermissionGuard.vue";
 import CreateButton from "@/components/buttons/CreateButton.vue";
 import EditButton from "@/components/buttons/EditButton.vue";
 import DeleteButton from "@/components/buttons/DeleteButton.vue";
 import PaginationItems from "@/components/PaginationItems.vue";
-import LoadingAnimation from "@/components/LoadingAnimation.vue";
 import { usePaginatedFetch } from "@/types/api";
 import type { SystemUser } from "@/types/api";
 

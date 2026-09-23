@@ -1,34 +1,24 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-xl mx-auto px-4 py-8">
-      <div class="mb-8 flex items-center justify-between">
-        <h1 class="text-3xl font-light text-gray-900 tracking-tight">
-          Edit User
-        </h1>
-        <BackButton redirect="users" />
-      </div>
+  <div class="max-w-xl animate-rise">
+    <PageHeader back eyebrow="Team" title="Edit team member" />
 
-      <LoadingAnimation :loading="loadingUser" />
+    <LoadingAnimation :loading="loadingUser" />
 
-      <ErrorLoading
-        v-if="error && !loadingUser"
-        :error="error"
-        @retry="loadUser"
+    <ErrorLoading
+      v-if="error && !loadingUser"
+      :error="error"
+      @retry="loadUser"
+    />
+
+    <div v-else-if="!loadingUser" class="surface p-6">
+      <UserForm
+        v-model:form="form"
+        :roles="[]"
+        :field-errors="fieldErrors"
+        :loading="saving"
+        editing
+        @submit="submit"
       />
-
-      <div
-        v-else-if="!loadingUser"
-        class="bg-white rounded-xl border border-gray-100 shadow-sm p-6"
-      >
-        <UserForm
-          v-model:form="form"
-          :roles="[]"
-          :field-errors="fieldErrors"
-          :loading="saving"
-          editing
-          @submit="submit"
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -37,7 +27,7 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/services/api";
-import BackButton from "@/components/buttons/BackButton.vue";
+import PageHeader from "@/components/layout/PageHeader.vue";
 import LoadingAnimation from "@/components/LoadingAnimation.vue";
 import ErrorLoading from "@/components/ErrorLoading.vue";
 import UserForm from "@/components/users/UserForm.vue";

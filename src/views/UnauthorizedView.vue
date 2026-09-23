@@ -1,43 +1,35 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="bg-white p-8 rounded shadow-md w-full max-w-md text-center">
-      <div class="mb-6">
-        <svg
-          class="mx-auto h-16 w-16 text-red-500"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z"
-          />
-        </svg>
-      </div>
-      <h2 class="text-2xl font-bold text-gray-900 mb-4">Acesso Negado</h2>
-      <p class="text-gray-600 mb-6">
-        Você não tem permissão para acessar esta página.
-      </p>
-      <div class="space-y-3">
-        <button
-          @click="$router.push('/')"
-          class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
-        >
-          Voltar ao Início
-        </button>
-        <button
-          @click="$router.go(-1)"
-          class="w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition"
-        >
-          Página Anterior
-        </button>
-      </div>
+  <div class="mx-auto max-w-md py-16 text-center animate-rise">
+    <div
+      class="mx-auto grid h-14 w-14 place-items-center rounded-xl border border-gold-400/30 bg-gold-400/10 text-gold-400"
+    >
+      <AppIcon name="lock" :size="24" />
+    </div>
+    <p class="eyebrow mt-8">Restricted area</p>
+    <h1 class="page-title mt-3">Not on your route</h1>
+    <p class="page-lead mx-auto">
+      Your account does not have access to this page. If you think it should,
+      ask an administrator to review your permissions.
+    </p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <button
+        type="button"
+        class="inline-flex items-center gap-2 rounded-lg bg-ember-500 px-4 py-2.5 text-sm font-bold text-ink-950 transition-colors duration-200 hover:bg-ember-400 active:bg-ember-600"
+        @click="$router.push('/')"
+      >
+        Go to overview
+      </button>
+      <button
+        type="button"
+        class="inline-flex items-center gap-2 rounded-lg border border-cream/20 px-4 py-2.5 text-sm font-semibold text-cream/85 transition-colors duration-200 hover:bg-cream/[0.06] active:bg-cream/10"
+        @click="$router.go(-1)"
+      >
+        Previous page
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// This component doesn't need any script logic for basic functionality
+import AppIcon from "@/components/ui/AppIcon.vue";
 </script>

@@ -1,10 +1,10 @@
 <template>
   <span
-    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+    class="inline-flex items-center rounded-md px-2 py-1 text-xs font-semibold leading-none ring-1 ring-inset ring-cream/10"
     :class="tone.badge"
     :title="status.label"
   >
-    <span class="w-1.5 h-1.5 rounded-full mr-1.5" :class="tone.dot"></span>
+    <span class="mr-1.5 h-1.5 w-1.5 rounded-full" :class="tone.dot"></span>
     {{ humanizeStatus(status.name) }}
   </span>
 </template>
@@ -19,32 +19,42 @@ const props = defineProps<{ status: DeliveryStatus }>();
 // Classes are written out in full on purpose: Tailwind scans the source for
 // literal class names, so strings built at runtime would be purged away.
 const palette: Record<string, { badge: string; dot: string }> = {
-  pending: { badge: "bg-gray-100 text-gray-800", dot: "bg-gray-400" },
-  attached: { badge: "bg-blue-100 text-blue-800", dot: "bg-blue-500" },
-  picked_up: { badge: "bg-indigo-100 text-indigo-800", dot: "bg-indigo-500" },
-  in_transit: { badge: "bg-amber-100 text-amber-800", dot: "bg-amber-500" },
-  delivered: { badge: "bg-green-100 text-green-800", dot: "bg-green-500" },
+  pending: { badge: "bg-cream/[0.06] text-cream/85", dot: "bg-cream/45" },
+  attached: { badge: "bg-gold-400/15 text-gold-300", dot: "bg-gold-400" },
+  picked_up: { badge: "bg-ember-500/10 text-ember-300", dot: "bg-ember-300" },
+  in_transit: { badge: "bg-ember-500/15 text-ember-400", dot: "bg-ember-500" },
+  delivered: { badge: "bg-moss-500/15 text-moss-400", dot: "bg-moss-500" },
   client_address_not_found: {
-    badge: "bg-orange-100 text-orange-800",
-    dot: "bg-orange-500",
+    badge: "bg-gold-500/15 text-gold-300",
+    dot: "bg-rust-400",
   },
   client_not_found: {
-    badge: "bg-orange-100 text-orange-800",
-    dot: "bg-orange-500",
+    badge: "bg-gold-500/15 text-gold-300",
+    dot: "bg-rust-400",
   },
-  canceled_by_client: { badge: "bg-red-100 text-red-800", dot: "bg-red-500" },
-  canceled_by_admin: { badge: "bg-red-100 text-red-800", dot: "bg-red-500" },
+  canceled_by_client: {
+    badge: "bg-rust-500/15 text-rust-400",
+    dot: "bg-rust-500",
+  },
+  canceled_by_admin: {
+    badge: "bg-rust-500/15 text-rust-400",
+    dot: "bg-rust-500",
+  },
+  canceled_by_support: {
+    badge: "bg-rust-500/15 text-rust-400",
+    dot: "bg-rust-500",
+  },
   return_to_sender: {
-    badge: "bg-purple-100 text-purple-800",
-    dot: "bg-purple-500",
+    badge: "bg-cream/[0.06] text-cream/85",
+    dot: "bg-gold-400",
   },
 };
 
 const tone = computed(
   () =>
     palette[props.status?.name] ?? {
-      badge: "bg-gray-100 text-gray-800",
-      dot: "bg-gray-400",
+      badge: "bg-cream/[0.06] text-cream/85",
+      dot: "bg-cream/45",
     }
 );
 </script>

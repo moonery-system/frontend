@@ -3,10 +3,10 @@
     <template #fallback>
       <div class="text-center py-16">
         <div
-          class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"
+          class="w-16 h-16 bg-rust-500/15 rounded-full flex items-center justify-center mx-auto mb-4"
         >
           <svg
-            class="w-8 h-8 text-red-400"
+            class="w-8 h-8 text-rust-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -19,26 +19,24 @@
             />
           </svg>
         </div>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">
-          Access Restricted
-        </h3>
-        <p class="text-gray-500">
+        <h3 class="text-lg font-medium text-cream mb-2">Access Restricted</h3>
+        <p class="text-cream/65">
           You don't have permission to create clients.
         </p>
       </div>
     </template>
 
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm">
+    <div class="surface">
       <div
         v-if="error"
-        class="rounded-lg bg-red-50 border border-red-100 p-4 text-sm text-red-700"
+        class="rounded-lg bg-rust-500/10 border border-rust-500/20 p-4 text-sm text-rust-400"
       >
         {{ error }}
       </div>
       <form v-if="!error" class="p-6 space-y-8" @submit.prevent="submit">
         <div>
-          <h2 class="text-sm font-semibold text-gray-900">Client Info</h2>
-          <p class="text-xs text-gray-500 mt-1">Basic account data</p>
+          <h2 class="text-sm font-semibold text-cream">Client Info</h2>
+          <p class="text-xs text-cream/65 mt-1">Basic account data</p>
 
           <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
             <TextInput
@@ -59,13 +57,13 @@
           </div>
         </div>
 
-        <div v-if="client == null" class="pt-6 border-t border-gray-100">
+        <div v-if="client == null" class="pt-6 border-t border-cream/10">
           <div class="flex items-start justify-between gap-4">
             <div>
-              <h2 class="text-sm font-semibold text-gray-900">
+              <h2 class="text-sm font-semibold text-cream">
                 Client Address (optional)
               </h2>
-              <p class="text-xs text-gray-500 mt-1">
+              <p class="text-xs text-cream/65 mt-1">
                 If you fill any field below, we’ll create the address after
                 creating the client.
               </p>
@@ -73,7 +71,7 @@
 
             <button
               type="button"
-              class="text-xs font-medium text-gray-600 hover:text-gray-900"
+              class="text-xs font-medium text-cream/75 hover:text-cream"
               @click="clearAddress"
             >
               Clear

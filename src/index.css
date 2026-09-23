@@ -1,3 +1,70 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-ink-950 font-sans text-cream antialiased;
+    line-height: 1.6;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+
+  ::selection {
+    @apply bg-ember-500/40 text-cream;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-ember-500/60 ring-offset-2 ring-offset-ink-950;
+  }
+
+  /* Native controls inherit the dark scheme instead of flashing white. */
+  input,
+  select,
+  textarea {
+    @apply bg-ink-900 text-cream transition-colors duration-200 placeholder:text-cream/40;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    @apply border-ember-500/60;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-gold-400;
+  }
+
+  .page-title {
+    @apply font-display text-3xl font-extrabold tracking-tight text-cream sm:text-4xl;
+    letter-spacing: -0.03em;
+  }
+
+  .page-lead {
+    @apply mt-3 max-w-xl text-[15px] leading-7 text-cream/60;
+  }
+
+  .surface {
+    @apply rounded-xl border border-cream/10 bg-ink-800 shadow-layer;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-md bg-cream/[0.07];
+  }
+}
+
+/* Dark scrollbars, thin, so panels do not flash a light track */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(244 236 220 / 0.2) transparent;
+}

@@ -1,108 +1,107 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-5xl mx-auto px-4 py-8">
-      <div class="mb-8 flex items-center justify-between">
-        <div>
-          <h1 class="text-3xl font-light text-gray-900 tracking-tight">
-            Deliveries
-          </h1>
-          <p class="text-sm text-gray-500 mt-1">
-            Track and move packages through the flow
+  <div class="animate-rise">
+    <PageHeader
+      eyebrow="Dispatch"
+      title="Deliveries"
+      lead="Every parcel and where it stands. Open one to move it along, reassign it or read its full trail."
+    >
+      <PermissionGuard permission="deliveries.create">
+        <CreateButton text="New delivery" redirect="deliveries" />
+      </PermissionGuard>
+    </PageHeader>
+
+    <!-- Tabs only for people who can pick up a delivery -->
+    <div v-if="showTabs" class="mb-6 flex gap-1 border-b border-cream/10">
+      <button
+        v-for="option in tabs"
+        :key="option.key"
+        type="button"
+        @click="tab = option.key"
+        class="-mb-px border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors duration-200"
+        :class="
+          tab === option.key
+            ? 'border-ember-500 text-cream'
+            : 'border-transparent text-cream/55 hover:text-cream/85'
+        "
+      >
+        {{ option.label }}
+      </button>
+    </div>
+
+    <div class="mb-6 max-w-md">
+      <SearchInput
+        v-model="searchQuery"
+        placeholder="Tracking code or client name"
+        @input="debouncedSearch"
+      />
+    </div>
+
+    <ListSkeleton v-if="loading" />
+
+    <div
+      v-else-if="visible.length > 0"
+      class="surface divide-y divide-cream/10 overflow-hidden"
+    >
+      <div
+        v-for="delivery in visible"
+        :key="delivery.id"
+        class="flex flex-wrap items-center justify-between gap-4 px-5 py-5 transition-colors duration-200 hover:bg-cream/[0.03] sm:px-6"
+      >
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-3">
+            <p
+              class="font-mono text-sm font-medium tracking-tight text-gold-400"
+            >
+              {{ delivery.tracking_code ?? `#${delivery.id}` }}
+            </p>
+            <DeliveryStatusBadge :status="delivery.status" />
+          </div>
+
+          <p class="mt-2.5 font-semibold text-cream">
+            {{ delivery.client?.name ?? "Unknown recipient" }}
+          </p>
+          <p class="mt-0.5 text-sm text-cream/55">
+            {{ delivery.items?.length ?? 0 }}
+            {{ (delivery.items?.length ?? 0) === 1 ? "item" : "items" }}
+            <span class="mx-1.5 text-cream/25">/</span>
+            {{
+              delivery.delivery_man_id
+                ? delivery.deliveryman?.name ?? "Driver assigned"
+                : "Waiting for a driver"
+            }}
           </p>
         </div>
 
-        <PermissionGuard permission="deliveries.create">
-          <CreateButton text="Create Delivery" redirect="deliveries" />
-        </PermissionGuard>
+        <ViewButton :id="delivery.id" redirect="deliveries" />
       </div>
-
-      <!-- abas so para quem pode pegar entrega -->
-      <div v-if="showTabs" class="mb-6 flex gap-1 border-b border-gray-200">
-        <button
-          v-for="option in tabs"
-          :key="option.key"
-          type="button"
-          @click="tab = option.key"
-          class="px-4 py-2 text-sm font-medium border-b-2 -mb-px transition"
-          :class="
-            tab === option.key
-              ? 'border-blue-500 text-blue-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          "
-        >
-          {{ option.label }}
-        </button>
-      </div>
-
-      <div class="mb-6">
-        <input
-          v-model="searchQuery"
-          @input="debouncedSearch"
-          type="text"
-          placeholder="Search by tracking code or client name..."
-          class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-300 transition-all duration-200 text-sm text-gray-700"
-        />
-      </div>
-
-      <LoadingAnimation :loading="loading" />
-
-      <div v-if="visible.length > 0" class="space-y-3">
-        <div
-          v-for="delivery in visible"
-          :key="delivery.id"
-          class="bg-white rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-200 hover:shadow-sm"
-        >
-          <div class="p-6 flex items-center justify-between">
-            <div class="min-w-0">
-              <div class="flex items-center gap-3">
-                <p class="font-mono text-sm text-gray-500">
-                  {{ delivery.tracking_code ?? `#${delivery.id}` }}
-                </p>
-                <DeliveryStatusBadge :status="delivery.status" />
-              </div>
-
-              <p class="mt-2 text-gray-900 font-medium">
-                {{ delivery.client?.name ?? "—" }}
-              </p>
-              <p class="text-sm text-gray-500">
-                {{ delivery.items?.length ?? 0 }} item(s) ·
-                {{
-                  delivery.delivery_man_id
-                    ? delivery.deliveryman?.name ?? "assigned"
-                    : "unassigned"
-                }}
-              </p>
-            </div>
-
-            <ViewButton :id="delivery.id" redirect="deliveries" />
-          </div>
-        </div>
-      </div>
-
-      <p v-else-if="!loading" class="text-sm text-gray-400 py-10 text-center">
-        No delivery here.
-      </p>
-
-      <PaginationItems
-        :total="total"
-        :current-page="currentPage"
-        :per-page="perPage"
-        :last-page="lastPage"
-        :loading="loading"
-        item-label="deliveries"
-        @go-to-page="(page: number) => goToPage(page, { search: searchQuery })"
-      />
     </div>
+
+    <div v-else class="surface">
+      <EmptyState icon="package" :title="emptyTitle" :text="emptyText" />
+    </div>
+
+    <PaginationItems
+      :total="total"
+      :current-page="currentPage"
+      :per-page="perPage"
+      :last-page="lastPage"
+      :loading="loading"
+      item-label="deliveries"
+      @go-to-page="(page: number) => goToPage(page, { search: searchQuery })"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import PageHeader from "@/components/layout/PageHeader.vue";
+import SearchInput from "@/components/ui/SearchInput.vue";
+import EmptyState from "@/components/ui/EmptyState.vue";
+import ListSkeleton from "@/components/ui/ListSkeleton.vue";
 import { computed, onMounted, ref } from "vue";
 import PermissionGuard from "@/components/PermissionGuard.vue";
 import CreateButton from "@/components/buttons/CreateButton.vue";
 import ViewButton from "@/components/buttons/ViewButton.vue";
 import PaginationItems from "@/components/PaginationItems.vue";
-import LoadingAnimation from "@/components/LoadingAnimation.vue";
 import DeliveryStatusBadge from "@/components/deliveries/DeliveryStatusBadge.vue";
 import { usePaginatedFetch } from "@/types/api";
 import type { Delivery } from "@/types/api";
@@ -139,6 +138,23 @@ const visible = computed(() => {
       ? delivery.delivery_man_id === myId
       : delivery.delivery_man_id === null
   );
+});
+
+const emptyTitle = computed(() => {
+  if (searchQuery.value) return "Nothing matches that search";
+  if (showTabs.value && tab.value === "available") return "The pool is clear";
+  if (showTabs.value) return "No parcels on your route";
+  return "No deliveries yet";
+});
+
+const emptyText = computed(() => {
+  if (searchQuery.value)
+    return "Check the tracking code, or try the recipient's first name.";
+  if (showTabs.value && tab.value === "available")
+    return "New parcels appear here the moment they are created. Check back shortly.";
+  if (showTabs.value)
+    return "Pick one from the Available tab and it will show up here.";
+  return "Deliveries you create or receive will be listed here with their full status trail.";
 });
 
 let searchTimeout: ReturnType<typeof setTimeout> | null = null;

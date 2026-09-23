@@ -1,19 +1,21 @@
 <template>
   <div class="space-y-4">
     <div>
-      <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+      <label
+        class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
+      >
         Client
       </label>
 
       <div v-if="selected" class="mt-1 flex items-center justify-between">
         <div>
-          <p class="text-gray-900 font-medium">{{ selected.name }}</p>
-          <p class="text-sm text-gray-500">{{ selected.email }}</p>
+          <p class="text-cream font-medium">{{ selected.name }}</p>
+          <p class="text-sm text-cream/65">{{ selected.email }}</p>
         </div>
         <button
           type="button"
           @click="clear"
-          class="text-sm font-medium text-blue-600 hover:text-blue-700"
+          class="text-sm font-medium text-ember-400 hover:text-ember-400"
         >
           Change
         </button>
@@ -25,41 +27,43 @@
           @input="debouncedSearch"
           type="text"
           placeholder="Search a client by name..."
-          class="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="mt-1 w-full rounded-lg border border-cream/[0.14] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ember-500/60"
         />
 
-        <p v-if="searching" class="mt-2 text-xs text-gray-400">Searching...</p>
+        <p v-if="searching" class="mt-2 text-xs text-cream/55">Searching...</p>
 
         <ul
           v-else-if="results.length"
-          class="mt-2 border border-gray-100 rounded-lg divide-y divide-gray-100 overflow-hidden"
+          class="mt-2 border border-cream/10 rounded-lg divide-y divide-cream/10 overflow-hidden"
         >
           <li v-for="client in results" :key="client.id">
             <button
               type="button"
               @click="select(client)"
-              class="w-full text-left px-3 py-2 hover:bg-gray-50"
+              class="w-full text-left px-3 py-2 hover:bg-cream/[0.03]"
             >
-              <span class="text-sm text-gray-900">{{ client.name }}</span>
-              <span class="ml-2 text-xs text-gray-400">{{ client.email }}</span>
+              <span class="text-sm text-cream">{{ client.name }}</span>
+              <span class="ml-2 text-xs text-cream/55">{{ client.email }}</span>
             </button>
           </li>
         </ul>
 
-        <p v-else-if="query && !searching" class="mt-2 text-xs text-gray-400">
+        <p v-else-if="query && !searching" class="mt-2 text-xs text-cream/55">
           No client found.
         </p>
       </template>
     </div>
 
     <div v-if="selected">
-      <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+      <label
+        class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
+      >
         Delivery address
       </label>
 
       <p
         v-if="!selected.client_address?.length"
-        class="mt-1 text-sm text-red-600"
+        class="mt-1 text-sm text-rust-400"
       >
         This client has no address registered. Add one before creating a
         delivery.
@@ -72,8 +76,8 @@
           class="flex items-start gap-3 rounded-lg border p-3 cursor-pointer"
           :class="
             addressId === address.id
-              ? 'border-blue-300 bg-blue-50'
-              : 'border-gray-200 hover:border-gray-300'
+              ? 'border-ember-500/50 bg-ember-500/10'
+              : 'border-cream/[0.14] hover:border-cream/20'
           "
         >
           <input
@@ -83,7 +87,7 @@
             :checked="addressId === address.id"
             @change="selectAddress(address.id)"
           />
-          <span class="text-sm text-gray-700">
+          <span class="text-sm text-cream/85">
             {{ address.address_line }}, {{ address.neighborhood }}<br />
             {{ address.city }}/{{ address.state }} — {{ address.zip_code }}
             <template v-if="address.complement">

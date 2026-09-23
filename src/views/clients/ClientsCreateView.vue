@@ -1,52 +1,25 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4 py-8">
-      <!-- Header -->
-      <div class="mb-8">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <button
-              @click="$router.go(-1)"
-              class="inline-flex items-center text-gray-500 hover:text-gray-700 transition-colors duration-200"
-            >
-              <svg
-                class="w-5 h-5 mr-1"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Back
-            </button>
+  <div class="max-w-3xl animate-rise">
+    <PageHeader
+      back
+      eyebrow="Clients"
+      title="New client"
+      lead="A client is the person who receives deliveries. They get an invite by email."
+    />
 
-            <div>
-              <h1 class="text-3xl font-light text-gray-900 tracking-tight">
-                New Client
-              </h1>
-              <p class="text-sm text-gray-500 mt-1">Create a new client user</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <ClientForm @submit="submit" />
-    </div>
+    <ClientForm @submit="submit" />
   </div>
 </template>
 
 <script>
 import api from "@/services/api";
+import PageHeader from "@/components/layout/PageHeader.vue";
 import ClientForm from "@/components/clients/ClientForm.vue";
 
 export default {
   name: "ClientsCreateView",
   components: {
+    PageHeader,
     ClientForm,
   },
   data() {

@@ -2,7 +2,7 @@
   <PermissionGuard :permission="`${redirect}.view`">
     <button
       @click="action"
-      class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-150"
+      class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-cream/75 bg-cream/[0.03] rounded-lg hover:bg-cream/[0.06] transition-colors duration-200"
     >
       <svg
         class="w-3 h-3 mr-1.5"

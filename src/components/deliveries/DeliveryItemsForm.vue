@@ -1,13 +1,15 @@
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">
+      <h2
+        class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
+      >
         Items
       </h2>
       <button
         type="button"
         @click="addItem"
-        class="text-sm font-medium text-blue-600 hover:text-blue-700"
+        class="text-sm font-medium text-ember-400 hover:text-ember-400"
       >
         + Add item
       </button>
@@ -16,17 +18,17 @@
     <div
       v-for="(item, index) in modelValue"
       :key="index"
-      class="rounded-lg border border-gray-200 p-4 space-y-3"
+      class="rounded-lg border border-cream/[0.14] p-4 space-y-3"
     >
       <div class="flex items-center justify-between">
-        <span class="text-xs font-medium text-gray-400">
+        <span class="text-xs font-medium text-cream/55">
           Item {{ index + 1 }}
         </span>
         <button
           v-if="modelValue.length > 1"
           type="button"
           @click="removeItem(index)"
-          class="text-xs font-medium text-red-600 hover:text-red-700"
+          class="text-xs font-medium text-rust-400 hover:text-rust-400"
         >
           Remove
         </button>

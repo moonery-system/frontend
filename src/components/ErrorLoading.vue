@@ -1,38 +1,29 @@
 <template>
-  <div v-if="error" class="text-center py-16">
+  <div v-if="error" class="mx-auto max-w-sm py-20 text-center">
     <div
-      class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4"
+      class="mx-auto mb-5 grid h-12 w-12 place-items-center rounded-xl border border-rust-500/30 bg-rust-500/10 text-rust-400"
     >
-      <svg
-        class="w-8 h-8 text-red-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
+      <AppIcon name="alert" :size="22" />
     </div>
-    <h3 class="text-lg font-medium text-gray-900 mb-2">
-      Error Loading Resource
+    <h3 class="font-display text-lg font-bold tracking-tight text-cream">
+      We could not load this page
     </h3>
-    <p class="text-gray-500 mb-6">{{ error }}</p>
+    <p class="mt-2 text-sm leading-6 text-cream/60">{{ error }}</p>
     <button
       @click="tryAgain"
-      class="inline-flex items-center px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors duration-200"
+      class="mt-7 inline-flex items-center rounded-lg bg-ember-500 px-4 py-2 text-sm font-semibold text-ink-950 transition-colors duration-200 hover:bg-ember-400 active:bg-ember-600"
     >
-      Try Again
+      Try again
     </button>
   </div>
 </template>
 
 <script>
+import AppIcon from "@/components/ui/AppIcon.vue";
+
 export default {
   name: "ErrorLoading",
+  components: { AppIcon },
   props: {
     error: String,
     retry: Function,

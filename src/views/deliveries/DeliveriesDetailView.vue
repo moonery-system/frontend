@@ -1,28 +1,23 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-4xl mx-auto px-4 py-8">
-      <div class="mb-8 flex items-center justify-between">
-        <h1 class="text-3xl font-light text-gray-900 tracking-tight">
-          Delivery
-        </h1>
-        <BackButton redirect="deliveries" />
-      </div>
+  <div class="max-w-5xl animate-rise">
+    <PageHeader back eyebrow="Deliveries" title="Delivery details" />
 
-      <LoadingAnimation :loading="loading" />
+    <LoadingAnimation :loading="loading" />
 
-      <ErrorLoading v-if="error" :error="error" @retry="loadDelivery" />
+    <ErrorLoading v-if="error" :error="error" @retry="loadDelivery" />
 
-      <div v-else-if="delivery" class="space-y-6">
-        <DeliveryCard :delivery="delivery" />
+    <div v-else-if="delivery" class="space-y-6 animate-rise">
+      <DeliveryCard :delivery="delivery" />
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <DeliveryStatusActions
-            :delivery="delivery"
-            @done="loadDelivery"
-            @gone="onGone"
-          />
-          <DeliveryTimeline :history="delivery.status_history ?? []" />
-        </div>
+      <div
+        class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,4fr)]"
+      >
+        <DeliveryStatusActions
+          :delivery="delivery"
+          @done="loadDelivery"
+          @gone="onGone"
+        />
+        <DeliveryTimeline :history="delivery.status_history ?? []" />
       </div>
     </div>
   </div>
@@ -32,7 +27,7 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/services/api";
-import BackButton from "@/components/buttons/BackButton.vue";
+import PageHeader from "@/components/layout/PageHeader.vue";
 import LoadingAnimation from "@/components/LoadingAnimation.vue";
 import ErrorLoading from "@/components/ErrorLoading.vue";
 import DeliveryCard from "@/components/deliveries/DeliveryCard.vue";

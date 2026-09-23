@@ -1,94 +1,97 @@
 <template>
-  <div
-    class="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8"
-  >
+  <AuthLayout>
+    <p class="eyebrow">Invitation</p>
+    <h1 class="page-title mt-3">Set your password</h1>
+    <p class="page-lead">One last step before you can see your deliveries.</p>
+
+    <!-- Checking the token -->
     <div
-      class="max-w-md w-full bg-white rounded-xl shadow-lg p-8 space-y-6 border border-gray-100"
+      v-if="validating"
+      class="mt-10 space-y-3"
+      role="status"
+      aria-busy="true"
     >
-      <div class="text-center">
-        <div class="flex items-center justify-center mb-4">
-          <h1 class="text-3xl font-extrabold text-gray-900 ml-2">Moonery</h1>
-        </div>
-        <h2 class="text-2xl font-bold text-gray-900">Set your password</h2>
-      </div>
-
-      <!-- Validando o token -->
-      <div v-if="validating" class="text-center text-sm text-gray-500 py-6">
-        Checking your invite...
-      </div>
-
-      <!-- Token invalido ou expirado -->
-      <div v-else-if="!tokenValid" class="space-y-5">
-        <div
-          class="text-sm text-red-600 text-center p-3 bg-red-50 rounded-lg border border-red-200"
-        >
-          This invite is invalid or has expired. Ask for a new one to continue.
-        </div>
-
-        <router-link
-          to="/login"
-          class="block w-full text-center py-2.5 px-4 text-sm font-medium rounded-lg text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200"
-        >
-          Back to sign in
-        </router-link>
-      </div>
-
-      <!-- Definicao de senha -->
-      <form v-else @submit.prevent="submit" class="space-y-5">
-        <TextInput
-          v-model="password"
-          label="Password"
-          input-type="password"
-          autocomplete="new-password"
-          placeholder="Your new password"
-          :field-errors="fieldErrors.password"
-          :disabled="loading"
-        />
-
-        <TextInput
-          v-model="passwordConfirmation"
-          label="Confirm password"
-          input-type="password"
-          autocomplete="new-password"
-          placeholder="Repeat your new password"
-          :field-errors="confirmationError"
-          :disabled="loading"
-        />
-
-        <ul class="text-xs text-gray-500 space-y-1 pl-1">
-          <li :class="rules.length ? 'text-green-600' : ''">
-            At least 8 characters
-          </li>
-          <li :class="rules.upper ? 'text-green-600' : ''">
-            One uppercase letter
-          </li>
-          <li :class="rules.lower ? 'text-green-600' : ''">
-            One lowercase letter
-          </li>
-          <li :class="rules.digit ? 'text-green-600' : ''">One number</li>
-          <li :class="rules.special ? 'text-green-600' : ''">
-            One special character (@ $ ! % * ? &amp; - _)
-          </li>
-        </ul>
-
-        <button
-          type="submit"
-          :disabled="loading || !canSubmit"
-          class="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gray-900 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span v-if="loading">Saving...</span>
-          <span v-else>Activate my account</span>
-        </button>
-      </form>
-
-      <div
-        v-if="error"
-        class="mt-4 text-red-600 text-sm text-center p-3 bg-red-50 rounded-lg border border-red-200"
-      >
-        {{ error }}
-      </div>
+      <div class="skeleton h-11 w-full"></div>
+      <div class="skeleton h-11 w-full"></div>
+      <span class="sr-only">Checking your invite</span>
     </div>
-  </div>
+
+    <!-- Invalid or expired token -->
+    <div v-else-if="!tokenValid" class="mt-10 space-y-6">
+      <div
+        role="alert"
+        class="rounded-lg border border-rust-500/30 bg-rust-500/10 p-4 text-sm leading-6 text-rust-400"
+      >
+        This invite link is invalid or has expired. Ask for a new one to
+        continue.
+      </div>
+
+      <router-link
+        to="/login"
+        class="flex w-full items-center justify-center gap-2 rounded-lg bg-ember-500 px-4 py-3 text-sm font-bold text-ink-950 transition-colors duration-200 hover:bg-ember-400 active:bg-ember-600"
+      >
+        <AppIcon name="arrow-left" :size="16" :stroke-width="2.25" />
+        Back to sign in
+      </router-link>
+    </div>
+
+    <!-- Password definition -->
+    <form v-else @submit.prevent="submit" class="mt-10 space-y-5">
+      <TextInput
+        v-model="password"
+        label="Password"
+        input-type="password"
+        autocomplete="new-password"
+        placeholder="Your new password"
+        :field-errors="fieldErrors.password"
+        :disabled="loading"
+      />
+
+      <TextInput
+        v-model="passwordConfirmation"
+        label="Confirm password"
+        input-type="password"
+        autocomplete="new-password"
+        placeholder="Repeat your new password"
+        :field-errors="confirmationError"
+        :disabled="loading"
+      />
+
+      <ul
+        class="space-y-1.5 rounded-lg border border-cream/10 bg-ink-900 p-4 text-xs"
+      >
+        <li
+          v-for="rule in ruleList"
+          :key="rule.key"
+          class="flex items-center gap-2 transition-colors duration-200"
+          :class="rules[rule.key] ? 'text-moss-400' : 'text-cream/50'"
+        >
+          <AppIcon
+            :name="rules[rule.key] ? 'check' : 'x'"
+            :size="13"
+            :stroke-width="2.25"
+          />
+          {{ rule.label }}
+        </li>
+      </ul>
+
+      <button
+        type="submit"
+        :disabled="loading || !canSubmit"
+        class="flex w-full items-center justify-center rounded-lg bg-ember-500 px-4 py-3 text-sm font-bold text-ink-950 transition-colors duration-200 hover:bg-ember-400 active:bg-ember-600 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        {{ loading ? "Saving" : "Activate my account" }}
+      </button>
+    </form>
+
+    <div
+      v-if="error"
+      role="alert"
+      class="mt-5 rounded-lg border border-rust-500/30 bg-rust-500/10 p-3 text-sm text-rust-400"
+    >
+      {{ error }}
+    </div>
+  </AuthLayout>
 </template>
 
 <script setup lang="ts">
@@ -96,6 +99,8 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import api from "@/services/api";
 import TextInput from "@/components/form/TextInput.vue";
+import AuthLayout from "@/components/auth/AuthLayout.vue";
+import AppIcon from "@/components/ui/AppIcon.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -124,6 +129,14 @@ const confirmationError = computed(() =>
     ? "The passwords do not match."
     : ""
 );
+
+const ruleList = [
+  { key: "length", label: "At least 8 characters" },
+  { key: "upper", label: "One uppercase letter" },
+  { key: "lower", label: "One lowercase letter" },
+  { key: "digit", label: "One number" },
+  { key: "special", label: "One special character (@ $ ! % * ? & - _)" },
+] as const;
 
 const canSubmit = computed(
   () =>

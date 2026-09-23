@@ -1,21 +1,21 @@
 <template>
   <form
     @submit.prevent="submit"
-    class="border-t border-gray-100 p-3 flex items-end gap-2"
+    class="border-t border-cream/10 p-3 flex items-end gap-2"
   >
     <textarea
       v-model="body"
       rows="1"
       :disabled="disabled"
-      placeholder="Write a message..."
-      class="flex-1 resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50"
+      placeholder="Write a message"
+      class="flex-1 resize-none rounded-lg border border-cream/[0.14] bg-ink-900 px-3 py-2 text-sm text-cream placeholder-cream/40 transition-colors duration-200 focus:border-ember-500/60 focus:outline-none focus:ring-2 focus:ring-ember-500/30 disabled:opacity-50"
       @keydown.enter.exact.prevent="submit"
     ></textarea>
 
     <button
       type="submit"
       :disabled="disabled || !body.trim()"
-      class="px-3 py-2 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition disabled:opacity-50"
+      class="rounded-lg bg-ember-500 px-3 py-2 text-sm font-semibold text-ink-950 transition-colors duration-200 hover:bg-ember-400 active:bg-ember-600 disabled:opacity-40"
     >
       Send
     </button>

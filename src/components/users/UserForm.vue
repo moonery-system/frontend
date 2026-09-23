@@ -18,18 +18,20 @@
       :field-errors="fieldErrors.email"
       :disabled="editing"
     />
-    <p v-if="editing" class="text-xs text-gray-400 -mt-3">
+    <p v-if="editing" class="text-xs text-cream/55 -mt-3">
       The email cannot be changed after the account is created.
     </p>
 
     <div v-if="!editing" class="space-y-1">
-      <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+      <label
+        class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
+      >
         Role
       </label>
       <select
         :value="form.role_id"
         @change="update('role_id', ($event.target as HTMLSelectElement).value)"
-        class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full rounded-lg border border-cream/[0.14] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ember-500/60"
         :disabled="loading"
       >
         <option value="">No role</option>
@@ -37,12 +39,12 @@
           {{ role.name }}
         </option>
       </select>
-      <p v-if="fieldErrors.role_id" class="text-xs text-red-600">
+      <p v-if="fieldErrors.role_id" class="text-xs text-rust-400">
         {{ fieldErrors.role_id }}
       </p>
     </div>
 
-    <div class="pt-4 border-t border-gray-100">
+    <div class="pt-4 border-t border-cream/10">
       <ProcessButton
         :loading="loading"
         :default-text="editing ? 'Save changes' : 'Create user'"

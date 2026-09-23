@@ -1,10 +1,12 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-    <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-4">
+  <div class="surface p-6">
+    <h2
+      class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50 mb-4"
+    >
       Actions
     </h2>
 
-    <p v-if="!hasAnyAction" class="text-sm text-gray-400">
+    <p v-if="!hasAnyAction" class="text-sm text-cream/55">
       Nothing to do on this delivery.
     </p>
 
@@ -15,7 +17,7 @@
         type="button"
         :disabled="loading"
         @click="run('attach')"
-        class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
+        class="px-4 py-2 text-sm font-medium rounded-lg bg-ember-500 text-ink-950 hover:bg-ember-400 active:bg-ember-600 transition-colors duration-200 disabled:opacity-50"
       >
         Take this delivery
       </button>
@@ -26,7 +28,7 @@
         type="button"
         :disabled="loading"
         @click="run('detach')"
-        class="px-4 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
+        class="px-4 py-2 text-sm font-medium rounded-lg border border-cream/[0.14] text-cream/85 hover:bg-cream/[0.03] transition-colors duration-200 disabled:opacity-50"
       >
         Drop it
       </button>
@@ -38,11 +40,11 @@
         type="button"
         :disabled="loading"
         @click="onTransition(target)"
-        class="px-4 py-2 text-sm font-medium rounded-lg transition disabled:opacity-50"
+        class="px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 disabled:opacity-50"
         :class="
           isDestructive(target)
-            ? 'border border-red-200 text-red-700 hover:bg-red-50'
-            : 'bg-gray-900 text-white hover:bg-gray-800'
+            ? 'border border-rust-500/30 text-rust-400 hover:bg-rust-500/10'
+            : 'bg-ember-500 text-ink-950 hover:bg-ember-400'
         "
       >
         {{ humanizeStatus(target) }}
@@ -50,15 +52,17 @@
     </div>
 
     <!-- admin atribui ou reatribui -->
-    <div v-if="canAssign" class="mt-6 pt-5 border-t border-gray-100">
-      <label class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+    <div v-if="canAssign" class="mt-6 pt-5 border-t border-cream/10">
+      <label
+        class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
+      >
         Assign a delivery man
       </label>
 
       <div class="mt-2 flex gap-2">
         <select
           v-model="selectedDeliveryman"
-          class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="flex-1 rounded-lg border border-cream/[0.14] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ember-500/60"
         >
           <option :value="null">Choose...</option>
           <option v-for="man in deliverymen" :key="man.id" :value="man.id">
@@ -70,14 +74,14 @@
           type="button"
           :disabled="loading || !selectedDeliveryman"
           @click="assign"
-          class="px-4 py-2 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition disabled:opacity-50"
+          class="px-4 py-2 text-sm font-medium rounded-lg bg-ember-500 text-ink-950 hover:bg-ember-400 active:bg-ember-600 transition-colors duration-200 disabled:opacity-50"
         >
           Assign
         </button>
       </div>
     </div>
 
-    <p v-if="error" class="mt-4 text-sm text-red-600">{{ error }}</p>
+    <p v-if="error" class="mt-4 text-sm text-rust-400">{{ error }}</p>
 
     <ConfirmDialog
       :is-open="confirming !== null"

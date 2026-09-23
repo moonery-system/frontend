@@ -1,18 +1,18 @@
 <template>
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm mb-6">
-    <div class="p-6">
-      <div class="flex items-start space-x-6">
+  <div class="surface mb-6">
+    <div class="p-6 sm:p-8">
+      <div class="flex items-start gap-6 sm:gap-8">
         <div class="flex-shrink-0">
           <div
-            class="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center"
+            class="grid h-20 w-20 place-items-center rounded-xl bg-gold-400/15"
           >
-            <span class="text-gray-600 font-medium text-2xl">
+            <span class="font-display text-3xl font-extrabold text-gold-400">
               {{ name.charAt(0).toUpperCase() }}
             </span>
           </div>
           <div class="mt-3 text-center">
             <span
-              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+              class="inline-flex items-center rounded-md px-2 py-1 text-xs font-semibold leading-none ring-1 ring-inset ring-cream/10"
               :class="statusClasses"
             >
               <div
@@ -29,21 +29,23 @@
             <div class="space-y-4">
               <div>
                 <label
-                  class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+                  class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
                   >Full Name</label
                 >
-                <p class="mt-1 text-lg font-medium text-gray-900">{{ name }}</p>
+                <p class="mt-1.5 font-display text-lg font-bold text-cream">
+                  {{ name }}
+                </p>
               </div>
 
               <div>
                 <label
-                  class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+                  class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
                   >Email Address</label
                 >
-                <p class="mt-1 text-gray-900">
+                <p class="mt-1.5 text-cream">
                   <a
                     :href="`mailto:${email}`"
-                    class="hover:text-blue-600 transition-colors duration-200"
+                    class="hover:text-ember-400 transition-colors duration-200"
                     >{{ email }}</a
                   >
                 </p>
@@ -51,36 +53,36 @@
 
               <div>
                 <label
-                  class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+                  class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
                   >Client ID</label
                 >
-                <p class="mt-1 text-gray-900 font-mono text-sm">#{{ id }}</p>
+                <p class="mt-1 text-cream font-mono text-sm">#{{ id }}</p>
               </div>
             </div>
 
             <div class="space-y-4">
               <div>
                 <label
-                  class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+                  class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
                   >Activated</label
                 >
-                <p class="mt-1 text-gray-900">{{ formatDate(activated_at) }}</p>
+                <p class="mt-1.5 text-cream">{{ formatDate(activated_at) }}</p>
               </div>
 
               <div>
                 <label
-                  class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+                  class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
                   >Created</label
                 >
-                <p class="mt-1 text-gray-900">{{ formatDate(created_at) }}</p>
+                <p class="mt-1.5 text-cream">{{ formatDate(created_at) }}</p>
               </div>
 
               <div>
                 <label
-                  class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+                  class="text-[11px] font-semibold uppercase tracking-[0.12em] text-cream/50"
                   >Last Updated</label
                 >
-                <p class="mt-1 text-gray-900">{{ formatDate(updated_at) }}</p>
+                <p class="mt-1.5 text-cream">{{ formatDate(updated_at) }}</p>
               </div>
             </div>
           </div>
@@ -128,12 +130,12 @@ export default {
     statusClasses() {
       const isActive = this.activated_at;
       return isActive
-        ? "bg-green-100 text-green-800"
-        : "bg-gray-100 text-gray-800";
+        ? "bg-moss-500/15 text-moss-400"
+        : "bg-cream/[0.06] text-cream";
     },
     statusDotClasses() {
       const isActive = this.activated_at;
-      return isActive ? "bg-green-400" : "bg-gray-400";
+      return isActive ? "bg-moss-400" : "bg-cream/40";
     },
   },
   methods: {

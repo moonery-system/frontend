@@ -2,7 +2,7 @@
   <button
     type="submit"
     :disabled="loading"
-    class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 transition disabled:opacity-50"
+    class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-ember-500 text-ink-950 hover:bg-ember-400 active:bg-ember-600 transition-colors duration-200 disabled:opacity-50"
   >
     <svg
       v-if="loading"

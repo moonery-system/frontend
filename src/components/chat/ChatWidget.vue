@@ -1,34 +1,34 @@
 <template>
-  <div class="fixed bottom-4 left-4 z-50">
+  <div class="fixed bottom-4 left-4 z-40 lg:left-[19rem]">
     <!-- Painel -->
     <div
       v-if="open"
-      class="mb-3 w-80 h-96 bg-white rounded-xl border border-gray-200 shadow-2xl flex flex-col overflow-hidden"
+      class="mb-3 flex h-[26rem] w-[20rem] max-w-[calc(100vw-2rem)] animate-rise flex-col overflow-hidden rounded-xl border border-cream/[0.14] bg-ink-800 shadow-float"
     >
       <div
-        class="px-4 py-3 border-b border-gray-100 flex items-center justify-between"
+        class="px-4 py-3 border-b border-cream/10 flex items-center justify-between"
       >
         <div>
-          <p class="text-sm font-medium text-gray-900">Support</p>
-          <p class="text-[11px] text-gray-400">
-            Your conversation with our team
+          <p class="font-display text-sm font-bold text-cream">Support desk</p>
+          <p class="text-[11px] text-cream/55">
+            Usually answered within a few minutes
           </p>
         </div>
         <button
           type="button"
           @click="open = false"
-          class="text-gray-400 hover:text-gray-600 text-lg leading-none"
+          class="grid h-8 w-8 place-items-center rounded-lg text-cream/55 transition-colors duration-200 hover:bg-cream/[0.06] hover:text-cream"
+          aria-label="Close chat"
         >
-          &times;
+          <AppIcon name="x" :size="16" />
         </button>
       </div>
 
-      <p
-        v-if="loading"
-        class="flex-1 grid place-items-center text-xs text-gray-400"
-      >
-        Loading...
-      </p>
+      <div v-if="loading" class="flex-1 space-y-3 p-4" aria-busy="true">
+        <div class="skeleton h-9 w-2/3"></div>
+        <div class="skeleton ml-auto h-9 w-1/2"></div>
+        <div class="skeleton h-9 w-3/5"></div>
+      </div>
 
       <MessageList
         v-else
@@ -38,20 +38,21 @@
 
       <MessageComposer :disabled="sending || !conversationId" @send="send" />
 
-      <p v-if="error" class="px-4 pb-2 text-xs text-red-600">{{ error }}</p>
+      <p v-if="error" class="px-4 pb-2 text-xs text-rust-400">{{ error }}</p>
     </div>
 
     <!-- Botao -->
     <button
       type="button"
       @click="toggle"
-      class="relative w-12 h-12 rounded-full bg-gray-900 text-white shadow-lg hover:bg-gray-800 transition grid place-items-center"
+      class="relative grid h-12 w-12 place-items-center rounded-xl bg-ember-500 text-ink-950 shadow-float transition-all duration-200 hover:bg-ember-400 active:bg-ember-600 active:scale-95"
       title="Talk to support"
+      aria-label="Talk to support"
     >
-      <span class="text-lg">💬</span>
+      <AppIcon :name="open ? 'x' : 'message'" :size="20" :stroke-width="2" />
       <span
         v-if="unread > 0 && !open"
-        class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-medium flex items-center justify-center"
+        class="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-gold-400 px-1 text-[10px] font-bold text-ink-950 ring-2 ring-ink-950"
       >
         {{ unread > 9 ? "9+" : unread }}
       </span>
@@ -62,6 +63,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import api from "@/services/api";
+import AppIcon from "@/components/ui/AppIcon.vue";
 import MessageList from "@/components/chat/MessageList.vue";
 import MessageComposer from "@/components/chat/MessageComposer.vue";
 import type { Conversation, Message } from "@/types/api";

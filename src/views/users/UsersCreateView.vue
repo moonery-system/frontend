@@ -1,29 +1,27 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-xl mx-auto px-4 py-8">
-      <div class="mb-8 flex items-center justify-between">
-        <h1 class="text-3xl font-light text-gray-900 tracking-tight">
-          Create User
-        </h1>
-        <BackButton redirect="users" />
-      </div>
+  <div class="max-w-xl animate-rise">
+    <PageHeader
+      back
+      eyebrow="Team"
+      title="Add a team member"
+      lead="They receive an email to set their own password."
+    />
 
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-        <UserForm
-          v-model:form="form"
-          :roles="roles"
-          :field-errors="fieldErrors"
-          :loading="loading"
-          @submit="submit"
-        />
+    <div class="surface p-6">
+      <UserForm
+        v-model:form="form"
+        :roles="roles"
+        :field-errors="fieldErrors"
+        :loading="loading"
+        @submit="submit"
+      />
 
-        <p class="mt-4 text-xs text-gray-400">
-          The account is created without a password. An invite email is sent so
-          the person can set it.
-        </p>
+      <p class="mt-4 text-xs text-cream/55">
+        The account is created without a password. An invite email is sent so
+        the person can set it.
+      </p>
 
-        <p v-if="error" class="mt-4 text-sm text-red-600">{{ error }}</p>
-      </div>
+      <p v-if="error" class="mt-4 text-sm text-rust-400">{{ error }}</p>
     </div>
   </div>
 </template>
@@ -32,7 +30,7 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/services/api";
-import BackButton from "@/components/buttons/BackButton.vue";
+import PageHeader from "@/components/layout/PageHeader.vue";
 import UserForm from "@/components/users/UserForm.vue";
 import type { UserFormModel } from "@/components/users/UserForm.vue";
 import type { Role } from "@/types/api";

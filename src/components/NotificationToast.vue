@@ -4,19 +4,19 @@
       <div
         v-for="toast in toasts"
         :key="toast.id"
-        class="bg-white rounded-xl border border-gray-200 shadow-lg p-4"
+        class="bg-ink-800 rounded-xl border border-cream/[0.14] shadow-float p-4"
       >
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
-            <p class="text-sm font-medium text-gray-900">{{ toast.title }}</p>
-            <p v-if="toast.description" class="mt-1 text-xs text-gray-500">
+            <p class="text-sm font-medium text-cream">{{ toast.title }}</p>
+            <p v-if="toast.description" class="mt-1 text-xs text-cream/65">
               {{ toast.description }}
             </p>
           </div>
           <button
             type="button"
             @click="dismiss(toast.id)"
-            class="text-gray-400 hover:text-gray-600 text-lg leading-none"
+            class="text-cream/55 hover:text-cream/75 text-lg leading-none"
           >
             &times;
           </button>

@@ -1,35 +1,30 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-2xl mx-auto px-4 py-8">
-      <div class="mb-8 flex items-center justify-between">
-        <h1 class="text-3xl font-light text-gray-900 tracking-tight">
-          Create Delivery
-        </h1>
-        <BackButton redirect="deliveries" />
+  <div class="max-w-2xl animate-rise">
+    <PageHeader
+      back
+      eyebrow="Dispatch"
+      title="New delivery"
+      lead="Choose who receives it, where it goes and what is inside. It lands in the pool for drivers right away."
+    />
+
+    <form @submit.prevent="submit" class="surface p-6 space-y-8">
+      <ClientPicker @change="onClientChange" />
+
+      <DeliveryItemsForm v-model="items" :field-errors="fieldErrors" />
+
+      <div class="pt-4 border-t border-cream/10 flex items-center gap-3">
+        <ProcessButton
+          :loading="loading"
+          default-text="Create delivery"
+          loading-text="Creating..."
+        />
+        <span v-if="!canSubmit" class="text-xs text-cream/55">
+          Pick a client, an address and fill at least one item.
+        </span>
       </div>
 
-      <form
-        @submit.prevent="submit"
-        class="bg-white rounded-xl border border-gray-100 shadow-sm p-6 space-y-8"
-      >
-        <ClientPicker @change="onClientChange" />
-
-        <DeliveryItemsForm v-model="items" :field-errors="fieldErrors" />
-
-        <div class="pt-4 border-t border-gray-100 flex items-center gap-3">
-          <ProcessButton
-            :loading="loading"
-            default-text="Create delivery"
-            loading-text="Creating..."
-          />
-          <span v-if="!canSubmit" class="text-xs text-gray-400">
-            Pick a client, an address and fill at least one item.
-          </span>
-        </div>
-
-        <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
-      </form>
-    </div>
+      <p v-if="error" class="text-sm text-rust-400">{{ error }}</p>
+    </form>
   </div>
 </template>
 
@@ -37,7 +32,7 @@
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import api from "@/services/api";
-import BackButton from "@/components/buttons/BackButton.vue";
+import PageHeader from "@/components/layout/PageHeader.vue";
 import ProcessButton from "@/components/buttons/ProcessButton.vue";
 import ClientPicker from "@/components/deliveries/ClientPicker.vue";
 import DeliveryItemsForm from "@/components/deliveries/DeliveryItemsForm.vue";

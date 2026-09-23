@@ -3,7 +3,7 @@
     <button
       @click="action"
       :to="`${redirect}/${id}/edit`"
-      class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-150"
+      class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-ember-400 bg-ember-500/10 rounded-lg hover:bg-ember-500/15 transition-colors duration-200"
     >
       <svg
         class="w-3 h-3 mr-1.5"

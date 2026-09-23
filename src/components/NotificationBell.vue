@@ -3,13 +3,15 @@
     <button
       type="button"
       @click="toggle"
-      class="relative flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition"
+      class="relative grid h-10 w-10 place-items-center rounded-lg text-cream/70 transition-colors duration-200 hover:bg-cream/[0.06] hover:text-cream active:bg-cream/[0.09]"
+      :class="open ? 'bg-cream/[0.06] text-cream' : ''"
       title="Notifications"
+      aria-label="Notifications"
     >
-      <span class="text-lg">🔔</span>
+      <AppIcon name="bell" :size="20" />
       <span
         v-if="unread > 0"
-        class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-medium flex items-center justify-center"
+        class="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-ember-500 px-1 text-[10px] font-bold text-ink-950 ring-2 ring-ink-950"
       >
         {{ unread > 99 ? "99+" : unread }}
       </span>
@@ -17,43 +19,53 @@
 
     <div
       v-if="open"
-      class="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-white rounded-xl border border-gray-200 shadow-xl z-50"
+      class="absolute right-0 z-50 mt-2 max-h-[26rem] w-[20rem] max-w-[calc(100vw-2rem)] animate-rise overflow-y-auto rounded-xl border border-cream/[0.14] bg-ink-800 shadow-float sm:w-96"
     >
       <div
-        class="px-4 py-3 border-b border-gray-100 flex items-center justify-between"
+        class="px-4 py-3 border-b border-cream/10 flex items-center justify-between"
       >
-        <span class="text-sm font-medium text-gray-900">Notifications</span>
-        <span class="text-xs text-gray-400">{{ unread }} unread</span>
+        <span class="font-display text-sm font-bold text-cream"
+          >Notifications</span
+        >
+        <span class="text-xs text-cream/55">{{
+          unread ? `${unread} unread` : "All caught up"
+        }}</span>
       </div>
 
-      <p v-if="loading" class="px-4 py-6 text-sm text-gray-400 text-center">
-        Loading...
-      </p>
+      <div v-if="loading" class="space-y-4 px-4 py-4" aria-busy="true">
+        <div v-for="n in 3" :key="n" class="space-y-2">
+          <div class="skeleton h-3.5 w-2/3"></div>
+          <div class="skeleton h-3 w-full"></div>
+        </div>
+      </div>
 
-      <p
-        v-else-if="!notifications.length"
-        class="px-4 py-6 text-sm text-gray-400 text-center"
-      >
-        Nothing here yet.
-      </p>
+      <div v-else-if="!notifications.length" class="px-6 py-10 text-center">
+        <AppIcon name="bell" :size="22" class="mx-auto text-cream/30" />
+        <p class="mt-3 text-sm font-semibold text-cream/85">
+          No alerts on the road
+        </p>
+        <p class="mt-1 text-xs leading-5 text-cream/50">
+          Status changes on your deliveries will show up here as they happen.
+        </p>
+      </div>
 
-      <ul v-else class="divide-y divide-gray-100">
+      <ul v-else class="divide-y divide-cream/10">
         <li
           v-for="notification in notifications"
           :key="notification.id"
-          class="px-4 py-3"
-          :class="notification.read_at ? 'bg-white' : 'bg-blue-50'"
+          class="px-4 py-3 transition-colors duration-200"
+          :class="notification.read_at ? 'bg-ink-800' : 'bg-ember-500/[0.07]'"
         >
           <div class="flex items-start justify-between gap-2">
             <div class="min-w-0">
-              <p class="text-sm text-gray-900">{{ notification.title }}</p>
+              <p class="text-sm text-cream">{{ notification.title }}</p>
               <p
                 v-if="notification.description"
-                class="mt-0.5 text-xs text-gray-500"
+                class="mt-0.5 text-xs text-cream/65"
               >
                 {{ notification.description }}
               </p>
-              <p class="mt-1 text-[11px] text-gray-400">
+              <p class="mt-1 text-[11px] text-cream/55">
                 {{ formatDateTime(notification.created_at) }}
               </p>
             </div>
@@ -62,7 +74,7 @@
               v-if="!notification.read_at"
               type="button"
               @click="markAsRead(notification)"
-              class="text-xs font-medium text-blue-600 hover:text-blue-700 whitespace-nowrap"
+              class="text-xs font-medium text-ember-400 transition-colors duration-200 hover:text-ember-300 whitespace-nowrap"
             >
               Mark read
             </button>
@@ -76,6 +88,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import api from "@/services/api";
+import AppIcon from "@/components/ui/AppIcon.vue";
 import { formatDateTime } from "@/utils/date";
 import { onNotification } from "@/services/websocket";
 

@@ -3,7 +3,7 @@
     <button
       @click="handleDelete"
       :disabled="loading"
-      class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors duration-150 disabled:opacity-50"
+      class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-rust-400 bg-rust-500/10 rounded-lg hover:bg-rust-500/15 transition-colors duration-200 disabled:opacity-50"
     >
       <svg
         v-if="!loading"

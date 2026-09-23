@@ -1,94 +1,103 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
-    <div class="max-w-6xl mx-auto px-4 py-8">
-      <div class="mb-8">
-        <h1 class="text-3xl font-light text-gray-900 tracking-tight">
-          Support inbox
-        </h1>
-        <p class="text-sm text-gray-500 mt-1">
-          Conversations you attend. Your own conversation is in the chat button.
-        </p>
-      </div>
+  <div class="animate-rise">
+    <PageHeader
+      eyebrow="Support desk"
+      title="Conversations"
+      lead="People waiting on an answer. Your own conversation lives in the chat button."
+    />
 
-      <LoadingAnimation :loading="loading" />
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Conversas -->
-        <div class="md:col-span-1 space-y-2">
-          <button
-            v-for="conversation in conversations"
-            :key="conversation.id"
-            type="button"
-            @click="openConversation(conversation)"
-            class="w-full text-left bg-white rounded-xl border p-4 transition"
-            :class="
-              selected?.id === conversation.id
-                ? 'border-blue-300 bg-blue-50'
-                : 'border-gray-100 hover:border-gray-200'
-            "
+    <div
+      class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)]"
+    >
+      <!-- Conversation list -->
+      <div class="space-y-2">
+        <template v-if="loading">
+          <div
+            v-for="n in 4"
+            :key="n"
+            class="surface space-y-2 p-4"
+            aria-busy="true"
           >
-            <div class="flex items-center justify-between">
-              <p class="text-sm font-medium text-gray-900">
-                {{ conversation.user?.name ?? `#${conversation.user_id}` }}
-              </p>
-              <span
-                v-if="conversation.unread_count"
-                class="min-w-[18px] h-[18px] px-1 rounded-full bg-red-600 text-white text-[10px] font-medium flex items-center justify-center"
-              >
-                {{ conversation.unread_count }}
-              </span>
-            </div>
-            <p class="text-xs text-gray-400 mt-0.5">
-              {{ conversation.user?.email }}
-            </p>
-            <p class="text-[11px] text-gray-400 mt-1">
-              {{ formatDateTime(conversation.updated_at) }}
-            </p>
-          </button>
+            <div class="skeleton h-4 w-2/5"></div>
+            <div class="skeleton h-3 w-3/5"></div>
+          </div>
+        </template>
 
-          <p
-            v-if="!loading && !conversations.length"
-            class="text-sm text-gray-400 py-6 text-center"
-          >
-            No conversation yet.
+        <button
+          v-for="conversation in conversations"
+          :key="conversation.id"
+          type="button"
+          @click="openConversation(conversation)"
+          class="w-full rounded-xl border p-4 text-left transition-colors duration-200 active:bg-cream/[0.06]"
+          :class="
+            selected?.id === conversation.id
+              ? 'border-ember-500/50 bg-ember-500/10'
+              : 'border-cream/10 bg-ink-800 hover:bg-cream/[0.04]'
+          "
+        >
+          <div class="flex items-center justify-between gap-3">
+            <p class="truncate text-sm font-semibold text-cream">
+              {{ conversation.user?.name ?? `#${conversation.user_id}` }}
+            </p>
+            <span
+              v-if="conversation.unread_count"
+              class="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-ember-500 px-1 text-[10px] font-bold text-ink-950"
+            >
+              {{ conversation.unread_count }}
+            </span>
+          </div>
+          <p class="mt-0.5 truncate text-xs text-cream/55">
+            {{ conversation.user?.email }}
           </p>
+          <p class="mt-2 text-[11px] text-cream/40">
+            {{ formatDateTime(conversation.updated_at) }}
+          </p>
+        </button>
 
-          <PaginationItems
-            :total="total"
-            :current-page="currentPage"
-            :per-page="perPage"
-            :last-page="lastPage"
-            :loading="loading"
-            item-label="conversations"
-            @go-to-page="(page: number) => goToPage(page)"
+        <div v-if="!loading && !conversations.length" class="surface">
+          <EmptyState
+            icon="headset"
+            title="Quiet on the desk"
+            text="When someone writes in, their conversation shows up here."
           />
         </div>
 
-        <!-- Thread -->
-        <div class="md:col-span-2">
-          <div
-            v-if="selected"
-            class="bg-white rounded-xl border border-gray-100 shadow-sm h-[32rem] flex flex-col overflow-hidden"
-          >
-            <div class="px-4 py-3 border-b border-gray-100">
-              <p class="text-sm font-medium text-gray-900">
-                {{ selected.user?.name }}
-              </p>
-              <p class="text-[11px] text-gray-400">
-                {{ selected.user?.email }}
-              </p>
-            </div>
+        <PaginationItems
+          :total="total"
+          :current-page="currentPage"
+          :per-page="perPage"
+          :last-page="lastPage"
+          :loading="loading"
+          item-label="conversations"
+          @go-to-page="(page: number) => goToPage(page)"
+        />
+      </div>
 
-            <MessageList
-              :messages="messages"
-              :current-user-id="currentUserId"
-            />
-            <MessageComposer :disabled="sending" @send="send" />
+      <!-- Thread -->
+      <div>
+        <div
+          v-if="selected"
+          class="surface flex h-[34rem] flex-col overflow-hidden"
+        >
+          <div class="border-b border-cream/10 px-5 py-4">
+            <p class="font-display text-sm font-bold text-cream">
+              {{ selected.user?.name }}
+            </p>
+            <p class="text-[11px] text-cream/55">
+              {{ selected.user?.email }}
+            </p>
           </div>
 
-          <p v-else class="text-sm text-gray-400 py-16 text-center">
-            Pick a conversation on the left.
-          </p>
+          <MessageList :messages="messages" :current-user-id="currentUserId" />
+          <MessageComposer :disabled="sending" @send="send" />
+        </div>
+
+        <div v-else class="surface">
+          <EmptyState
+            icon="message"
+            title="Pick a conversation"
+            text="Choose someone from the list to read the thread and reply."
+          />
         </div>
       </div>
     </div>
@@ -98,7 +107,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
 import api from "@/services/api";
-import LoadingAnimation from "@/components/LoadingAnimation.vue";
+import PageHeader from "@/components/layout/PageHeader.vue";
+import EmptyState from "@/components/ui/EmptyState.vue";
 import PaginationItems from "@/components/PaginationItems.vue";
 import MessageList from "@/components/chat/MessageList.vue";
 import MessageComposer from "@/components/chat/MessageComposer.vue";

@@ -1,9 +1,9 @@
 <template>
   <div
     v-if="total > 0"
-    class="mt-8 pt-6 border-t border-gray-100 flex justify-between items-center"
+    class="mt-8 pt-6 border-t border-cream/10 flex justify-between items-center"
   >
-    <div class="text-sm text-gray-500">
+    <div class="text-sm text-cream/65">
       Showing {{ (currentPage - 1) * perPage + 1 }} to
       {{ Math.min(currentPage * perPage, total) }} of {{ total }}
       {{ itemLabel }}
@@ -13,19 +13,19 @@
       <button
         @click="$emit('go-to-page', currentPage - 1)"
         :disabled="currentPage === 1 || loading"
-        class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-colors duration-150"
+        class="px-3 py-1.5 text-sm font-medium text-cream/75 bg-ink-800 border border-cream/[0.14] rounded-lg hover:bg-cream/[0.06] disabled:opacity-50 transition-colors duration-200"
       >
         Previous
       </button>
 
-      <span class="text-sm font-medium text-gray-700">
+      <span class="text-sm font-medium text-cream/85">
         Page {{ currentPage }} of {{ lastPage }}
       </span>
 
       <button
         @click="$emit('go-to-page', currentPage + 1)"
         :disabled="currentPage === lastPage || loading"
-        class="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-colors duration-150"
+        class="px-3 py-1.5 text-sm font-medium text-cream/75 bg-ink-800 border border-cream/[0.14] rounded-lg hover:bg-cream/[0.06] disabled:opacity-50 transition-colors duration-200"
       >
         Next
       </button>
