@@ -68,6 +68,27 @@ export interface SystemUser {
   roles?: Role[];
 }
 
+export interface Message {
+  id: number;
+  conversation_id: number;
+  sender_id: number;
+  delivery_id: number | null;
+  body: string;
+  read_at: string | null;
+  created_at: string;
+  sender?: { id: number; name: string };
+}
+
+export interface Conversation {
+  id: number;
+  user_id: number;
+  created_at: string;
+  updated_at: string;
+  user?: { id: number; name: string; email: string };
+  messages?: Message[];
+  unread_count?: number;
+}
+
 export interface DeliveryStatus {
   id: number;
   name: string;
