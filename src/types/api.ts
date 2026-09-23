@@ -52,6 +52,22 @@ export interface Client {
   client_address: ClientAddress[];
 }
 
+export interface Role {
+  id: number;
+  name: string;
+}
+
+export interface SystemUser {
+  id: number;
+  name: string;
+  email: string;
+  activated_at: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  roles?: Role[];
+}
+
 export interface DeliveryStatus {
   id: number;
   name: string;

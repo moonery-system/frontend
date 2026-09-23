@@ -156,9 +156,9 @@ onMounted(async () => {
   if (canAssignPermission.value) {
     try {
       const response = await api.get("/users", {
-        params: { role: "Delivery Man" },
+        params: { role: "Delivery Man", per_page: 100 },
       });
-      deliverymen.value = response.data.data;
+      deliverymen.value = response.data.data.data;
     } catch (err) {
       deliverymen.value = [];
     }
