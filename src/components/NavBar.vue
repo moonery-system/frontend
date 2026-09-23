@@ -277,7 +277,7 @@ import api from "@/services/api";
 import PermissionGuard from "@/components/PermissionGuard.vue";
 import NotificationBell from "@/components/NotificationBell.vue";
 import NotificationToast from "@/components/NotificationToast.vue";
-import { clearAuthCache } from "@/services/auth";
+import { clearAuthCache, getUserData } from "@/services/auth";
 import {
   connect as connectWebSocket,
   disconnect as disconnectWebSocket,
@@ -322,9 +322,14 @@ export default {
     async checkAuth() {
       this.loadingAuth = true;
       try {
-        const response = await api.get("/auth/user");
+        // Shares the cache with the router guard: before this, every navigation made
+        // two calls to /auth/user.
+        const authData = await getUserData();
+
+        if (!authData) throw new Error("not authenticated");
+
         this.isAuthenticated = true;
-        this.user = response.data.data?.user || null;
+        this.user = authData.user || null;
         connectWebSocket();
       } catch (error) {
         this.isAuthenticated = false;

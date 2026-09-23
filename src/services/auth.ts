@@ -14,30 +14,36 @@ interface AuthData {
 
 let cachedAuthData: AuthData | null = null;
 
+// Collapses concurrent callers into one request. Without it every PermissionGuard
+// that mounts at the same time fires its own /auth/user, because the cache only
+// helps once the first response has landed.
+let inFlight: Promise<AuthData | null> | null = null;
+
 export async function isTokenValid(): Promise<boolean> {
-  try {
-    const response = await api.get("/auth/user");
-    cachedAuthData = response.data.data;
-    return true;
-  } catch (error) {
-    cachedAuthData = null;
-    return false;
-  }
+  // Goes through the cache: the router guard runs on every navigation, and hitting
+  // the network each time doubled the auth requests per page change.
+  return (await getUserData()) !== null;
 }
 
 export async function getUserData(): Promise<AuthData | null> {
-  try {
-    if (cachedAuthData) {
-      return cachedAuthData;
-    }
+  if (cachedAuthData) return cachedAuthData;
+  if (inFlight) return inFlight;
 
-    const response = await api.get("/auth/user");
-    cachedAuthData = response.data.data;
-    return cachedAuthData;
-  } catch (error) {
-    cachedAuthData = null;
-    return null;
-  }
+  inFlight = api
+    .get("/auth/user")
+    .then((response) => {
+      cachedAuthData = response.data.data;
+      return cachedAuthData;
+    })
+    .catch(() => {
+      cachedAuthData = null;
+      return null;
+    })
+    .finally(() => {
+      inFlight = null;
+    });
+
+  return inFlight;
 }
 
 /**
@@ -150,6 +156,7 @@ export async function hasDomainPermissions(domain: string): Promise<boolean> {
 
 export function clearAuthCache(): void {
   cachedAuthData = null;
+  inFlight = null;
 }
 
 export function getCurrentUser(): User | null {
