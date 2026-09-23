@@ -15,6 +15,7 @@ import DeliveriesDetailView from "@/views/deliveries/DeliveriesDetailView.vue";
 import UsersListView from "@/views/users/UsersListView.vue";
 import UsersCreateView from "@/views/users/UsersCreateView.vue";
 import UsersEditView from "@/views/users/UsersEditView.vue";
+import SupportInboxView from "@/views/support/SupportInboxView.vue";
 
 const routes = [
   { path: "/login", component: LoginView, meta: { guestOnly: true } },
@@ -102,6 +103,14 @@ const routes = [
     meta: {
       requiresAuth: true,
       requiredPermissions: ["users.update"],
+    },
+  },
+  {
+    path: "/support",
+    component: SupportInboxView,
+    meta: {
+      requiresAuth: true,
+      requiredPermissions: ["chat.viewAll"],
     },
   },
   {

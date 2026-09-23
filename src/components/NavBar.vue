@@ -74,6 +74,17 @@
                   </router-link>
                 </PermissionGuard>
 
+                <PermissionGuard permission="chat.viewAll">
+                  <router-link
+                    to="/support"
+                    class="flex items-center px-3 py-2 rounded-md text-sm font-medium text-gray-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-600"
+                    active-class="bg-blue-100 text-blue-700"
+                  >
+                    <span class="mr-2">🎧</span>
+                    Support
+                  </router-link>
+                </PermissionGuard>
+
                 <!-- Exemplo com wildcard -->
                 <PermissionGuard permission="users.*">
                   <router-link
@@ -259,6 +270,7 @@
       </nav>
 
       <NotificationToast v-if="isAuthenticated" />
+      <ChatWidget v-if="isAuthenticated" />
 
       <!-- Main Content -->
       <main class="flex-1">
@@ -277,6 +289,7 @@ import api from "@/services/api";
 import PermissionGuard from "@/components/PermissionGuard.vue";
 import NotificationBell from "@/components/NotificationBell.vue";
 import NotificationToast from "@/components/NotificationToast.vue";
+import ChatWidget from "@/components/chat/ChatWidget.vue";
 import { clearAuthCache, getUserData } from "@/services/auth";
 import {
   connect as connectWebSocket,
@@ -289,6 +302,7 @@ export default {
     PermissionGuard,
     NotificationBell,
     NotificationToast,
+    ChatWidget,
   },
   data() {
     return {
