@@ -13,4 +13,15 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    return Promise.reject({
+      status: error?.response?.status,
+      message: error?.response?.data?.message || "Unexpected error",
+      errors: error?.response?.data?.errors || null,
+    });
+  }
+);
+
 export default api;
