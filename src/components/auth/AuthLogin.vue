@@ -125,17 +125,12 @@ const login = async () => {
     router.push("/");
   } catch (err: any) {
     password.value = ""; // Clear password on error for security
-    if (err.response?.data) {
-      const { errors, message } = err.response.data;
-      if (errors?.email) {
-        error.value = errors.email[0];
-      } else if (message) {
-        error.value = message;
-      } else {
-        error.value = "An unknown error occurred.";
-      }
-    } else {
+    if (err.errors?.email) {
+      error.value = err.errors.email[0];
+    } else if (!err.status) {
       error.value = "Network error or server is unreachable.";
+    } else {
+      error.value = err.message;
     }
   } finally {
     loading.value = false;
