@@ -68,6 +68,32 @@ export interface SystemUser {
   roles?: Role[];
 }
 
+export type AssistantStatus = "active" | "handed_off";
+
+export type PendingActionStatus =
+  | "pending"
+  | "confirmed"
+  | "rejected"
+  | "expired"
+  | "failed"
+  | "superseded";
+
+/**
+ * A confirmation the assistant is waiting for. The API also sends an `error` field with
+ * an internal, technical message: it is left out on purpose, and never shown.
+ */
+export interface PendingAction {
+  id: number;
+  conversation_id: number;
+  user_id: number;
+  delivery_id: number;
+  message_id: number | null;
+  action: string;
+  status: PendingActionStatus;
+  expires_at: string;
+  resolved_at: string | null;
+}
+
 export interface Message {
   id: number;
   conversation_id: number;
@@ -77,6 +103,10 @@ export interface Message {
   read_at: string | null;
   created_at: string;
   sender?: { id: number; name: string };
+  // True when the message was written by the assistant, not by a person.
+  is_assistant?: boolean;
+  // Set on the message that asked "do you confirm?".
+  pending_action?: PendingAction | null;
 }
 
 export interface Conversation {
@@ -87,6 +117,9 @@ export interface Conversation {
   user?: { id: number; name: string; email: string };
   messages?: Message[];
   unread_count?: number;
+  assistant_status?: AssistantStatus;
+  handed_off_at?: string | null;
+  handoff_reason?: string | null;
 }
 
 export interface DeliveryStatus {
