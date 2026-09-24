@@ -5,10 +5,14 @@ import UnauthorizedView from "@/views/UnauthorizedView.vue";
 import { isTokenValid, hasPermission, hasAnyPermission } from "@/services/auth";
 import ClientsListView from "@/views/clients/ClientsListView.vue";
 import LoginView from "@/views/auth/LoginView.vue";
+import InviteView from "@/views/auth/InviteView.vue";
 import ClientsDetailView from "@/views/clients/ClientsDetailView.vue";
+import ClientsCreateView from "@/views/clients/ClientsCreateView.vue";
+import ClientsEditView from "@/views/clients/ClientsEditView.vue";
 
 const routes = [
   { path: "/login", component: LoginView, meta: { guestOnly: true } },
+  { path: "/invite", component: InviteView, meta: { guestOnly: true } },
   {
     path: "/",
     component: HomeView,
@@ -28,6 +32,22 @@ const routes = [
     meta: {
       requiresAuth: true,
       requiredPermissions: ["clients.view"],
+    },
+  },
+  {
+    path: "/clients/create",
+    component: ClientsCreateView,
+    meta: {
+      requiresAuth: true,
+      requiredPermissions: ["clients.create"],
+    },
+  },
+  {
+    path: "/clients/:id/edit",
+    component: ClientsEditView,
+    meta: {
+      requiresAuth: true,
+      requiredPermissions: ["clients.update"],
     },
   },
   {
