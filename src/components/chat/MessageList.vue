@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, watch } from "vue";
+import { nextTick, onMounted, ref, watch } from "vue";
 import type { Message } from "@/types/api";
 import { formatDateTime } from "@/utils/date";
 import AppIcon from "@/components/ui/AppIcon.vue";
@@ -92,12 +92,13 @@ function bubbleClass(message: Message): string {
     : "bg-cream/[0.06] text-cream rounded-bl-sm";
 }
 
-// Keeps the latest message in view as the thread grows.
-watch(
-  () => props.messages.length,
-  async () => {
-    await nextTick();
-    if (scroller.value) scroller.value.scrollTop = scroller.value.scrollHeight;
-  }
-);
+async function scrollToEnd() {
+  await nextTick();
+  if (scroller.value) scroller.value.scrollTop = scroller.value.scrollHeight;
+}
+
+// Keeps the latest message in view as the thread grows -- and when the list first
+// appears, already full: the message that matters (a confirmation to answer) is the last.
+watch(() => props.messages.length, scrollToEnd);
+onMounted(scrollToEnd);
 </script>

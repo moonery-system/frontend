@@ -89,12 +89,20 @@ const intent = ref<"confirm" | "reject" | null>(null);
 // must not fall to the top of the page with them.
 let restoreFocus = false;
 
+// Where the customer may still cancel by himself (the rule lives in the backend; this is
+// only used to avoid saying something untrue).
+const CANCELABLE = ["pending", "attached"];
+
 // The message of a 409 is technical; what is worth saying is what the delivery is now.
 async function describeRefusal(action: PendingAction): Promise<string | null> {
   const response = await api.get(`/deliveries/${action.delivery_id}`);
   const status: string | undefined = response.data?.data?.status?.name;
 
   if (!status) return null;
+
+  // The reason is read from the delivery as it is NOW. If it can be canceled again, the
+  // sentence below would be false: better the generic one than a wrong explanation.
+  if (CANCELABLE.includes(status)) return null;
 
   return `Couldn't cancel: the delivery is now ${humanizeStatus(
     status
