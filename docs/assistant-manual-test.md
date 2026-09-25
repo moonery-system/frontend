@@ -100,8 +100,13 @@ Cliente: `Quero falar com uma pessoa, por favor.` (a conversa precisa estar `act
   A person will reply here soon."**; o campo de texto continua habilitado.
 - Suporte, **sem recarregar**: a conversa ganha o selo **"Assistant asked for help"** na lista e
   no cabeçalho da thread.
-- Suporte responde na thread: o selo vira **"Answered by support"** (neutro) e o assistente não
-  responde mais naquela conversa.
+- Suporte responde na thread: o selo **continua** "Assistant asked for help". O backend só
+  grava o motivo `support_replied` quando a conversa ainda está `active`; quem já foi
+  encaminhado mantém o motivo original.
+- Para ver **"Answered by support"** (neutro): restaure a conversa para `active` (abaixo), mande
+  uma mensagem como cliente com o consumidor parado (`docker compose stop assistant-consumer`) e
+  responda como Suporte antes de o assistente agir: o selo vira "Answered by support" e o
+  assistente não responde mais naquela conversa. Religue o consumidor depois.
 
 ## 8. Demora do assistente (45 s)
 
