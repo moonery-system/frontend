@@ -3,6 +3,8 @@ export interface PushPayload {
   title?: string;
   description?: string;
   user_id?: number;
+  // On "chat.message": the conversation the message belongs to.
+  conversation_id?: number;
 }
 
 type Handler = (payload: PushPayload) => void;

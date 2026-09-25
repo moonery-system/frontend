@@ -34,6 +34,14 @@
         v-else
         :messages="messages"
         :current-user-id="currentUserId"
+        interactive
+        @settled="reload"
+      />
+
+      <AssistantPresence
+        v-if="eligible"
+        :phase="waiting.phase.value"
+        :handed-off="handedOff"
       />
 
       <MessageComposer :disabled="sending || !conversationId" @send="send" />
@@ -61,14 +69,22 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import api from "@/services/api";
 import AppIcon from "@/components/ui/AppIcon.vue";
+import AssistantPresence from "@/components/chat/AssistantPresence.vue";
 import MessageList from "@/components/chat/MessageList.vue";
 import MessageComposer from "@/components/chat/MessageComposer.vue";
-import type { Conversation, Message } from "@/types/api";
-import { getCurrentUser } from "@/services/auth";
+import type { AssistantStatus, Conversation, Message } from "@/types/api";
+import { getCurrentPermissions, getCurrentUser } from "@/services/auth";
 import { onNotification } from "@/services/websocket";
+import {
+  POLL_INTERVAL_MS,
+  canUseAssistant,
+  useAssistantWaiting,
+  withinPollWindow,
+} from "@/composables/useAssistantWaiting";
+import { createSingleFlight } from "@/utils/singleFlight";
 
 const open = ref(false);
 const loading = ref(false);
@@ -77,8 +93,39 @@ const error = ref("");
 const conversationId = ref<number | null>(null);
 const messages = ref<Message[]>([]);
 const unread = ref(0);
-const currentUserId = ref<number | null>(null);
+const currentUserId = ref<number | null>(getCurrentUser()?.id ?? null);
+const assistantStatus = ref<AssistantStatus | undefined>(undefined);
 let unsubscribe: (() => void) | null = null;
+let poller: ReturnType<typeof setInterval> | null = null;
+
+// The widget is everybody's "my conversation": the assistant only answers customers, so
+// only they get its indicator and its handoff notice.
+const eligible = computed(() => canUseAssistant(getCurrentPermissions()));
+const handedOff = computed(
+  () => eligible.value && assistantStatus.value === "handed_off"
+);
+
+const waiting = useAssistantWaiting({
+  messages,
+  assistantStatus,
+  enabled: eligible,
+  currentUserId,
+});
+
+// api.ts turns every failure into { status, message, errors }; no status means no answer.
+function describe(err: unknown): string {
+  const failure = err as { status?: number; message?: string };
+
+  return failure.status
+    ? failure.message ?? "Unexpected error"
+    : "Network error or server is unreachable.";
+}
+
+function apply(conversation: Conversation) {
+  conversationId.value = conversation.id;
+  messages.value = conversation.messages ?? [];
+  assistantStatus.value = conversation.assistant_status;
+}
 
 async function loadConversation() {
   loading.value = true;
@@ -86,15 +133,30 @@ async function loadConversation() {
 
   try {
     const response = await api.get("/conversations/me");
-    const conversation: Conversation = response.data.data;
-    conversationId.value = conversation.id;
-    messages.value = conversation.messages ?? [];
-  } catch (err: any) {
-    error.value = err.status
-      ? err.message
-      : "Network error or server is unreachable.";
+    apply(response.data.data);
+  } catch (err) {
+    error.value = describe(err);
   } finally {
     loading.value = false;
+  }
+}
+
+// Reloads without the skeleton, and never two at once: a burst of pushes becomes one
+// extra fetch. The push carries neither the confirmation card nor the assistant flag, so
+// the thread is fetched again instead of appending what the push says.
+const reload = createSingleFlight(async () => {
+  const response = await api.get("/conversations/me");
+  apply(response.data.data);
+});
+
+async function markRead() {
+  if (!conversationId.value) return;
+
+  try {
+    await api.put(`/conversations/${conversationId.value}/read`);
+    unread.value = 0;
+  } catch (err) {
+    // deixa o contador como esta se o servidor recusou
   }
 }
 
@@ -113,15 +175,7 @@ async function toggle() {
   if (!open.value) return;
 
   await loadConversation();
-
-  if (conversationId.value) {
-    try {
-      await api.put(`/conversations/${conversationId.value}/read`);
-      unread.value = 0;
-    } catch (err) {
-      // deixa o contador como esta se o servidor recusou
-    }
-  }
+  await markRead();
 }
 
 async function send(body: string) {
@@ -138,30 +192,53 @@ async function send(body: string) {
       }
     );
     messages.value = [...messages.value, response.data.data];
-  } catch (err: any) {
-    error.value = err.status
-      ? err.message
-      : "Network error or server is unreachable.";
+  } catch (err) {
+    error.value = describe(err);
   } finally {
     sending.value = false;
   }
 }
 
+// Safety net while an answer is awaited: a push lost while the socket reconnects would
+// otherwise leave the customer looking at "replying…" for an answer that already came.
+function syncPolling() {
+  const shouldPoll = open.value && waiting.phase.value !== "idle";
+
+  if (!shouldPoll) {
+    if (poller) clearInterval(poller);
+    poller = null;
+    return;
+  }
+
+  if (poller) return;
+
+  poller = setInterval(() => {
+    const last = messages.value[messages.value.length - 1];
+
+    // Long past the point where an answer can still come: stop asking. It starts again
+    // by itself the next time the chat is opened or a new message is waiting.
+    if (!last || !withinPollWindow(last.created_at, Date.now())) {
+      if (poller) clearInterval(poller);
+      poller = null;
+      return;
+    }
+
+    reload().catch(() => undefined);
+  }, POLL_INTERVAL_MS);
+}
+
+watch([open, waiting.phase], syncPolling);
+
 onMounted(() => {
   currentUserId.value = getCurrentUser()?.id ?? null;
   loadUnread();
 
-  unsubscribe = onNotification((payload: any) => {
+  unsubscribe = onNotification((payload) => {
     if (payload.type !== "chat.message") return;
-    if (payload.conversation_id !== conversationId.value) {
-      unread.value += 1;
-      return;
-    }
 
-    if (open.value) {
-      messages.value = [...messages.value, payload as Message];
-      api
-        .put(`/conversations/${conversationId.value}/read`)
+    if (open.value && payload.conversation_id === conversationId.value) {
+      reload()
+        .then(markRead)
         .catch(() => undefined);
     } else {
       unread.value += 1;
@@ -169,5 +246,8 @@ onMounted(() => {
   });
 });
 
-onUnmounted(() => unsubscribe?.());
+onUnmounted(() => {
+  unsubscribe?.();
+  if (poller) clearInterval(poller);
+});
 </script>
