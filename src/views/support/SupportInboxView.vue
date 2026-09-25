@@ -49,6 +49,11 @@
           <p class="mt-0.5 truncate text-xs text-cream/55">
             {{ conversation.user?.email }}
           </p>
+          <HandoffBadge
+            v-if="conversation.assistant_status === 'handed_off'"
+            :reason="conversation.handoff_reason"
+            class="mt-2"
+          />
           <p class="mt-2 text-[11px] text-cream/40">
             {{ formatDateTime(conversation.updated_at) }}
           </p>
@@ -79,13 +84,22 @@
           v-if="selected"
           class="surface flex h-[34rem] flex-col overflow-hidden"
         >
-          <div class="border-b border-cream/10 px-5 py-4">
-            <p class="font-display text-sm font-bold text-cream">
-              {{ selected.user?.name }}
-            </p>
-            <p class="text-[11px] text-cream/55">
-              {{ selected.user?.email }}
-            </p>
+          <div
+            class="flex items-start justify-between gap-3 border-b border-cream/10 px-5 py-4"
+          >
+            <div class="min-w-0">
+              <p class="font-display text-sm font-bold text-cream">
+                {{ selected.user?.name }}
+              </p>
+              <p class="text-[11px] text-cream/55">
+                {{ selected.user?.email }}
+              </p>
+            </div>
+            <HandoffBadge
+              v-if="selected.assistant_status === 'handed_off'"
+              :reason="selected.handoff_reason"
+              class="shrink-0"
+            />
           </div>
 
           <MessageList :messages="messages" :current-user-id="currentUserId" />
@@ -110,6 +124,7 @@ import api from "@/services/api";
 import PageHeader from "@/components/layout/PageHeader.vue";
 import EmptyState from "@/components/ui/EmptyState.vue";
 import PaginationItems from "@/components/PaginationItems.vue";
+import HandoffBadge from "@/components/chat/HandoffBadge.vue";
 import MessageList from "@/components/chat/MessageList.vue";
 import MessageComposer from "@/components/chat/MessageComposer.vue";
 import { usePaginatedFetch } from "@/types/api";
@@ -117,6 +132,7 @@ import type { Conversation, Message } from "@/types/api";
 import { formatDateTime } from "@/utils/date";
 import { getCurrentUser } from "@/services/auth";
 import { onNotification } from "@/services/websocket";
+import { createSingleFlight } from "@/utils/singleFlight";
 
 const {
   data: conversations,
@@ -135,16 +151,37 @@ const sending = ref(false);
 const currentUserId = ref<number | null>(null);
 let unsubscribe: (() => void) | null = null;
 
+function applyThread(conversation: Conversation) {
+  selected.value = conversation;
+  messages.value = conversation.messages ?? [];
+}
+
 async function openConversation(conversation: Conversation) {
   const response = await api.get(`/conversations/${conversation.id}`);
-  selected.value = response.data.data;
-  messages.value = response.data.data.messages ?? [];
+  applyThread(response.data.data);
 
   await api
     .put(`/conversations/${conversation.id}/read`)
     .catch(() => undefined);
   conversation.unread_count = 0;
 }
+
+// The push carries neither the confirmation state nor the assistant flag, so the thread is
+// fetched again instead of appending what it says. Never two fetches at once: a burst of
+// pushes becomes one extra fetch.
+const reloadSelected = createSingleFlight(async () => {
+  if (!selected.value) return;
+
+  const id = selected.value.id;
+  const response = await api.get(`/conversations/${id}`);
+
+  // The agent may have opened another conversation while this one was loading.
+  if (selected.value?.id === id) applyThread(response.data.data);
+});
+
+const reloadList = createSingleFlight(() =>
+  loadConversations(currentPage.value)
+);
 
 async function send(body: string) {
   if (!selected.value) return;
@@ -159,6 +196,10 @@ async function send(body: string) {
       }
     );
     messages.value = [...messages.value, response.data.data];
+
+    // Answering silences the assistant, so the badge of the thread and of the list changes.
+    reloadSelected().catch(() => undefined);
+    reloadList().catch(() => undefined);
   } finally {
     sending.value = false;
   }
@@ -168,19 +209,21 @@ onMounted(() => {
   currentUserId.value = getCurrentUser()?.id ?? null;
   loadConversations();
 
-  unsubscribe = onNotification((payload: any) => {
+  unsubscribe = onNotification((payload) => {
     if (payload.type !== "chat.message") return;
 
     if (selected.value && payload.conversation_id === selected.value.id) {
-      messages.value = [...messages.value, payload as Message];
-      api
-        .put(`/conversations/${selected.value.id}/read`)
+      reloadSelected()
+        .then(() =>
+          api.put(`/conversations/${selected.value?.id}/read`).catch(() => {
+            // deixa o contador como esta se o servidor recusou
+          })
+        )
         .catch(() => undefined);
-      return;
     }
 
-    // Chegou noutra conversa: recarrega a lista para o contador subir.
-    loadConversations(currentPage.value);
+    // The list shows the unread counter and the handoff badge, so it follows every push.
+    reloadList().catch(() => undefined);
   });
 });
 
