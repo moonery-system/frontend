@@ -171,9 +171,14 @@ export function usePaginatedFetch<T>(endpoint: string) {
   const lastPage = ref(1);
   const perPage = ref(10);
   const loading = ref(false);
+  // Set on a failed fetch, e.g. a 401 once the session has expired. Callers that want
+  // to react to it can read this; the ones that don't are simply not left with an
+  // unhandled rejection crashing the page.
+  const error = ref("");
 
   async function fetch(page = 1, params: Record<string, any> = {}) {
     loading.value = true;
+    error.value = "";
     try {
       const response = await api.get<ApiResponse<PaginatedResponse<T>>>(
         endpoint,
@@ -186,6 +191,10 @@ export function usePaginatedFetch<T>(endpoint: string) {
       total.value = meta.total;
       currentPage.value = meta.current_page;
       lastPage.value = meta.last_page;
+    } catch (err: any) {
+      error.value = err.status
+        ? err.message
+        : "Network error or server is unreachable.";
     } finally {
       loading.value = false;
     }
@@ -205,6 +214,7 @@ export function usePaginatedFetch<T>(endpoint: string) {
     lastPage,
     perPage,
     loading,
+    error,
     fetch,
     goToPage,
   };
