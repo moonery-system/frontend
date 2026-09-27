@@ -20,6 +20,48 @@ The single-page app of **Moonery**, a delivery management platform. One codebase
 | **Support chat** | A floating chat for every signed-in user, and a support inbox with unread counts |
 | **AI assistant** | Inside the chat: confirmation cards for cancelling, a "replying…" indicator, and a hand-off banner |
 
+## Screenshots
+
+<table>
+<tr>
+<td width="50%">
+
+**Admin overview**
+<img src=".screenshots/admin_dashboard.png" alt="Admin dashboard listing two deliveries, one pending and one in transit">
+
+</td>
+<td width="50%">
+
+**Delivery detail, as the delivery man** — one button per status the API allows next, plus the full timeline
+<img src=".screenshots/delivery_detail_as_deliveryman.png" alt="Delivery detail page in transit, with action buttons and a four-step status timeline">
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**The assistant answering a status question**
+<img src=".screenshots/support_chat_as_client.png" alt="Support chat where the assistant answers a status question with the real delivery data">
+
+</td>
+<td width="50%">
+
+**The cancellation confirmation card**
+<img src=".screenshots/cancel_delivery_chat_support.png" alt="Support chat showing the assistant's fixed cancellation confirmation with Confirm and Keep buttons">
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+**Support desk**, after the customer confirmed the cancellation
+<img src=".screenshots/support_desk_as_support.png" alt="Support inbox showing the full conversation, ending with the assistant confirming the cancellation">
+
+</td>
+<td width="50%"></td>
+</tr>
+</table>
+
 ## Design decisions
 
 - **Permission-driven UI.** A `PermissionGuard` component and route metadata hide what a user may not use. Permissions accept wildcards (`clients.*`). The UI is a convenience; the API is still the one that enforces.
